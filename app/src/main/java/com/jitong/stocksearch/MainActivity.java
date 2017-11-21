@@ -21,7 +21,7 @@ public class MainActivity extends AppCompatActivity {
         }else {
 
             //go to the stock details activity
-            Intent intent = new Intent(getApplicationContext(), StockDetailsActivity.class);
+            Intent intent = new Intent(getApplicationContext(), SecondActivity.class);
             intent.putExtra("symbol",stockSymbolTextView.getText().toString() );
             startActivity(intent);
 
@@ -45,8 +45,11 @@ public class MainActivity extends AppCompatActivity {
         AutoCompleteAdapter adapter = new AutoCompleteAdapter (this, android.R.layout.select_dialog_item);
         //Getting the instance of AutoCompleteTextView
         DelayAutoCompleteTextView stockSymbolTextView = findViewById(R.id.StockEditText);
-        stockSymbolTextView.setThreshold(1);//will start working from first character
-        stockSymbolTextView.setAdapter(adapter);//setting the adapter data into the AutoCompleteTextView
+        //will start working from first character
+        stockSymbolTextView.setThreshold(1);
+        //setting the adapter data into the AutoCompleteTextView
+        stockSymbolTextView.setAdapter(adapter);
+        //set progressBar
         stockSymbolTextView.setLoadingIndicator(
                 (android.widget.ProgressBar) findViewById(R.id.AutoCompleteProgressBar));
     }
