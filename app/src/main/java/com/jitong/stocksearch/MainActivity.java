@@ -1,5 +1,6 @@
 package com.jitong.stocksearch;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -16,11 +17,13 @@ public class MainActivity extends AppCompatActivity {
         if(TextUtils.isEmpty(stockSymbolTextView.getText().toString().trim())){
 
             Toast.makeText(this, "Please enter a stock name or symbol", Toast.LENGTH_SHORT).show();
-            return;
 
         }else {
 
-
+            //go to the stock details activity
+            Intent intent = new Intent(getApplicationContext(), StockDetailsActivity.class);
+            intent.putExtra("symbol",stockSymbolTextView.getText().toString() );
+            startActivity(intent);
 
         }
     }

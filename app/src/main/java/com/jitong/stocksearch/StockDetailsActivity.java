@@ -11,9 +11,12 @@ public class StockDetailsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_stock_details);
-        setTitle("History");
+
 
         Intent intent = getIntent();
-        Toast.makeText(this, intent.getStringExtra("symbol"), Toast.LENGTH_SHORT).show();
+        String symbol = intent.getStringExtra("symbol");
+        Toast.makeText(this, symbol , Toast.LENGTH_SHORT).show();
+
+        setTitle(symbol.substring(0, symbol.indexOf("-")));
     }
 }
