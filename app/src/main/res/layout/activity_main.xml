@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.widget.RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/restaurant"
+    android:maxHeight="500dp"
+    android:maxWidth="200dp"
+    android:minHeight="250dp"
+    android:minWidth="0dp"
+    tools:context="com.jitong.stocksearch.MainActivity">
+
+    <TextView
+        android:id="@+id/SearchTitleTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="22dp"
+        android:text="@string/search_title"
+        android:textColor="@android:color/white"
+        android:textSize="30sp" />
+
+    <AutoCompleteTextView
+        android:id="@+id/StockEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/SearchTitleTextView"
+        android:layout_centerHorizontal="true"
+        android:layout_marginEnd="10dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="24dp"
+        android:ems="10"
+        android:text=""
+        android:textAlignment="center"
+        android:textColor="@android:color/white"
+        android:textColorLink="@android:color/white"
+        android:theme="@style/Autocomplete"/>
+
+    <Button
+        android:id="@+id/GetQuoteButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/SearchTitleTextView"
+        android:layout_below="@+id/StockEditText"
+        android:layout_marginTop="10dp"
+        android:background="@android:color/transparent"
+        android:onClick="getQuote"
+        android:text="@string/get_quote"
+        android:textAllCaps="false"
+        android:textColor="@color/colorPrimaryDark"
+        android:textSize="24sp" />
+
+    <Button
+        android:id="@+id/ClearButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/SearchTitleTextView"
+        android:layout_below="@+id/StockEditText"
+        android:layout_marginStart="165dp"
+        android:layout_marginTop="10dp"
+        android:background="@android:color/transparent"
+        android:onClick="clearQuote"
+        android:text="@string/clear"
+        android:textAllCaps="false"
+        android:textColor="@color/colorPrimaryDark"
+        android:textSize="24sp" />
+
+    <TextView
+        android:id="@+id/FavoritesTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/StockEditText"
+        android:layout_below="@+id/GetQuoteButton"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="10dp"
+        android:text="@string/favorites"
+        android:textColor="@android:color/white"
+        android:textSize="22sp"/>
+
+    <Switch
+        android:id="@+id/AutoRefreshSwitch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/StockEditText"
+        android:layout_below="@+id/GetQuoteButton"
+        android:layout_marginStart="180dp"
+        android:layout_marginTop="15dp"
+        android:layout_toEndOf="@+id/FavoritesTextView"
+        android:textColor="@android:color/white"
+        android:text="@string/autorefresh" />
+
+    <Spinner
+        android:id="@+id/SortBySpinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/AutoRefreshSwitch"
+        android:layout_marginStart="40dp"
+        android:layout_marginEnd="220dp"
+        android:layout_marginTop="11dp"
+        android:entries="@array/sort_by"/>
+
+    <Spinner
+        android:id="@+id/ClearSpinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/AutoRefreshSwitch"
+        android:layout_marginStart="200dp"
+        android:layout_marginEnd="40dp"
+        android:layout_marginTop="11dp"
+        android:entries="@array/order"/>
+
+</android.widget.RelativeLayout>
