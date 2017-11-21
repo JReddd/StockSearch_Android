@@ -44,9 +44,10 @@ public class MainActivity extends AppCompatActivity {
         //Creating the instance of AutoCompleteAdapter
         AutoCompleteAdapter adapter = new AutoCompleteAdapter (this, android.R.layout.select_dialog_item);
         //Getting the instance of AutoCompleteTextView
-        AutoCompleteTextView stockSymbolTextView = findViewById(R.id.StockEditText);
+        DelayAutoCompleteTextView stockSymbolTextView = findViewById(R.id.StockEditText);
         stockSymbolTextView.setThreshold(1);//will start working from first character
         stockSymbolTextView.setAdapter(adapter);//setting the adapter data into the AutoCompleteTextView
-
+        stockSymbolTextView.setLoadingIndicator(
+                (android.widget.ProgressBar) findViewById(R.id.AutoCompleteProgressBar));
     }
 }

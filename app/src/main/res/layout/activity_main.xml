@@ -22,7 +22,7 @@
         android:textColor="@android:color/white"
         android:textSize="30sp" />
 
-    <AutoCompleteTextView
+    <com.jitong.stocksearch.DelayAutoCompleteTextView
         android:id="@+id/StockEditText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -110,5 +110,14 @@
         android:layout_marginEnd="40dp"
         android:layout_marginTop="11dp"
         android:entries="@array/order"/>
+
+    <ProgressBar
+        android:id="@+id/AutoCompleteProgressBar"
+        android:indeterminateTint="@android:color/black"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/AutoRefreshSwitch"
+        android:layout_centerHorizontal="true"
+        android:visibility="gone"/>
 
 </android.widget.RelativeLayout>
