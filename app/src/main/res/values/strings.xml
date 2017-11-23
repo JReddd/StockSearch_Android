@@ -5,6 +5,7 @@
     <string name="clear">Clear</string>
     <string name="favorites">Favorites</string>
     <string name="autorefresh">AutoRefresh </string>
+    <string name="stock_details">Stock Details</string>
     <string-array name="sort_by">
         <item>Sort by</item>
         <item>Default</item>

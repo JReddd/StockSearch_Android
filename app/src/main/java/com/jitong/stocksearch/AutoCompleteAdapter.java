@@ -97,6 +97,7 @@ public class AutoCompleteAdapter extends ArrayAdapter implements Filterable {
                                 public void onErrorResponse(VolleyError error) {
                                     // TODO Auto-generated method stub
                                     isDone[0] = true;
+                                    Log.i("auto error", String.valueOf(error));
 
                                 }
                             });
