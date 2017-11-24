@@ -41,8 +41,17 @@ public class CurrentFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         final View rootView = inflater.inflate(R.layout.fragment_current, container, false);
-
         final ArrayList<String> stockTable = new ArrayList<>();
+        final String[] keyTable = {
+            "Stock Symbol",
+            "Last Price",
+            "Change",
+            "Timestamp",
+            "Open",
+            "Close",
+            "Day's Range",
+            "Volume"
+        };
 
         RequestQueue queue = Volley.newRequestQueue(getActivity().getApplicationContext());
         String symbol =   getActivity().getIntent().getStringExtra("symbol");
@@ -57,12 +66,24 @@ public class CurrentFragment extends Fragment {
                             String symbolTable = response.getString("Stock Ticker Symbol");
                             String priceTable = response.getString("Last Price");
                             String changeTable = response.getString("Change");
+                            String timeStampTable = response.getString("TimeStamp");
+                            String openTable = response.getString("Open");
+                            String closeTable = response.getString("Close");
+                            String rangeTable = response.getString("Days Range");
+                            String volumeTable = response.getString("Volume");
+                            String changePercentTable = response.getString("Change Percent");
+                            String change = changeTable + " (" + changePercentTable + ")";
                             stockTable.add(symbolTable);
                             stockTable.add(priceTable);
-                            stockTable.add(changeTable);
+                            stockTable.add(change);
+                            stockTable.add(timeStampTable);
+                            stockTable.add(openTable);
+                            stockTable.add(closeTable);
+                            stockTable.add(rangeTable);
+                            stockTable.add(volumeTable);
 
                             ListView stockDetails = rootView.findViewById(R.id.stockDetailsListView);
-                            ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(getActivity(),android.R.layout.simple_list_item_1, stockTable);
+                            ListVIewAdapter arrayAdapter = new ListVIewAdapter(getActivity(),keyTable, stockTable);
                             stockDetails.setAdapter(arrayAdapter);
 
                         }catch (Exception ex) {
@@ -83,3 +104,8 @@ public class CurrentFragment extends Fragment {
         return rootView;
     }
 }
+
+
+
+// sim-outorder -config test.config -redir:sim artWidth8.out art -scanfile c756hel.in -trainfile1 a10.img
+// sim-outorder -config test.config -redir:sim bitcntWidth8.out bitcnts 1125000

@@ -110,7 +110,7 @@ public class AutoCompleteAdapter extends ArrayAdapter implements Filterable {
 
                 }
                 while (!isDone[0]) {
-
+                    //wait the service request
                 }
                 return results;
             }
