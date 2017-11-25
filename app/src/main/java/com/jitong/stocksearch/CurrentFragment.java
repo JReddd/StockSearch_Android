@@ -100,7 +100,6 @@ public class CurrentFragment extends Fragment {
                                 arrayAdapter = new ListVIewAdapter(getActivity(),keyTable, stockTable, upId);
                             }
 
-
                             stockDetails.setAdapter(arrayAdapter);
 
                         }catch (Exception ex) {
