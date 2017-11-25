@@ -9,9 +9,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.support.v4.app.Fragment;
 
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -23,6 +25,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 
 public class CurrentFragment extends Fragment {
@@ -52,9 +55,13 @@ public class CurrentFragment extends Fragment {
             "Day's Range",
             "Volume"
         };
+        final Integer upId = R.drawable.up;
+        final Integer downId = R.drawable.down;
+
+        final ProgressBar progressBar = rootView.findViewById(R.id.stockDetailsProgressBar);
 
         RequestQueue queue = Volley.newRequestQueue(getActivity().getApplicationContext());
-        String symbol =   getActivity().getIntent().getStringExtra("symbol");
+        String symbol = getActivity().getIntent().getStringExtra("symbol");
         String url = "http://stocksearch-env.us-west-1.elasticbeanstalk.com/?stock_symbolTable=" + symbol.substring(0, symbol.indexOf("-"));
         JsonObjectRequest jsObjRequest = new JsonObjectRequest
                 (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
@@ -62,6 +69,7 @@ public class CurrentFragment extends Fragment {
                     @Override
                     public void onResponse(JSONObject response) {
                         try {
+                            progressBar.setVisibility(View.GONE);
 
                             String symbolTable = response.getString("Stock Ticker Symbol");
                             String priceTable = response.getString("Last Price");
@@ -72,7 +80,7 @@ public class CurrentFragment extends Fragment {
                             String rangeTable = response.getString("Days Range");
                             String volumeTable = response.getString("Volume");
                             String changePercentTable = response.getString("Change Percent");
-                            String change = changeTable + " (" + changePercentTable + ")";
+                            String change = changeTable + " (" + changePercentTable + ") ";
                             stockTable.add(symbolTable);
                             stockTable.add(priceTable);
                             stockTable.add(change);
@@ -83,7 +91,16 @@ public class CurrentFragment extends Fragment {
                             stockTable.add(volumeTable);
 
                             ListView stockDetails = rootView.findViewById(R.id.stockDetailsListView);
-                            ListVIewAdapter arrayAdapter = new ListVIewAdapter(getActivity(),keyTable, stockTable);
+                            stockDetails.setVisibility(View.VISIBLE);
+                            ListVIewAdapter arrayAdapter;
+
+                            if (Objects.equals(changeTable.substring(0,1), "-")){
+                                arrayAdapter = new ListVIewAdapter(getActivity(),keyTable, stockTable, downId);
+                            } else {
+                                arrayAdapter = new ListVIewAdapter(getActivity(),keyTable, stockTable, upId);
+                            }
+
+
                             stockDetails.setAdapter(arrayAdapter);
 
                         }catch (Exception ex) {
@@ -99,13 +116,14 @@ public class CurrentFragment extends Fragment {
 
                     }
                 });
+
+        jsObjRequest.setRetryPolicy(new DefaultRetryPolicy(
+                4000,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
         queue.add(jsObjRequest);
 
         return rootView;
     }
+
 }
-
-
-
-// sim-outorder -config test.config -redir:sim artWidth8.out art -scanfile c756hel.in -trainfile1 a10.img
-// sim-outorder -config test.config -redir:sim bitcntWidth8.out bitcnts 1125000

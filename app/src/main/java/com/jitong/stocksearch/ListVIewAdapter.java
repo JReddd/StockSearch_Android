@@ -21,12 +21,14 @@ public class ListVIewAdapter extends ArrayAdapter {
     private final Activity context;
     private final String[] keyTable;
     private final ArrayList<String> valueTable;
+    private final Integer up_down_Id;
 
-    public ListVIewAdapter(@NonNull Activity context, String[] keyTable, ArrayList<String> valueTable) {
+    public ListVIewAdapter(@NonNull Activity context, String[] keyTable, ArrayList<String> valueTable, Integer up_down_Id) {
         super(context, R.layout.list_single, keyTable);
         this.context = context;
         this.keyTable = keyTable;
         this.valueTable = valueTable;
+        this.up_down_Id = up_down_Id;
     }
 
     @Override
@@ -40,8 +42,13 @@ public class ListVIewAdapter extends ArrayAdapter {
         keyTableTextView.setText(keyTable[position]);
         valueTableTextView.setText(valueTable.get(position));
 
-        //ImageView imageView = (ImageView) rowView.findViewById(R.id.img);
-        //imageView.setImageResource(imageId[position]);
+        ImageView imageView = rowView.findViewById(R.id.up_down_Table);
+        imageView.setImageResource(up_down_Id);
+
+        if (!keyTable[position].equals("Change")){
+            imageView.setVisibility(View.GONE);
+        }
+
         return rowView;
     }
 

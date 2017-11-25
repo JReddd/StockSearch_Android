@@ -9,7 +9,7 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent">
 
         <TextView
             android:id="@+id/stockDetailsTextView"
@@ -46,7 +46,22 @@
             android:id="@+id/stockDetailsListView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@+id/emptyStarImageView"/>
+            android:layout_below="@+id/emptyStarImageView"
+            android:paddingEnd="20dp"
+            android:paddingStart="20dp"
+            android:paddingTop="20dp"
+            android:visibility="gone">
+
+        </ListView>
+
+        <ProgressBar
+            android:id="@+id/stockDetailsProgressBar"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true"
+            android:indeterminateTint="@android:color/black"/>
 
     </RelativeLayout>
 

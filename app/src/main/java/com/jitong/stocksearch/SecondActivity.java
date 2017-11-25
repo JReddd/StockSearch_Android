@@ -132,8 +132,8 @@ public class SecondActivity extends AppCompatActivity {
                         NewsFragment = new NewsFragment();
                     }
                     return NewsFragment;
+                default: return null;
             }
-            return null;
         }
 
         @Override
