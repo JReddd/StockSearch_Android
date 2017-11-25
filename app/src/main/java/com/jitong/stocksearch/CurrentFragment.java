@@ -30,6 +30,8 @@ import java.util.Objects;
 
 public class CurrentFragment extends Fragment {
 
+    private View rootView;
+
     public CurrentFragment() {
         // Required empty public constructor
     }
@@ -42,85 +44,88 @@ public class CurrentFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        if (rootView == null){
 
-        final View rootView = inflater.inflate(R.layout.fragment_current, container, false);
-        final ArrayList<String> stockTable = new ArrayList<>();
-        final String[] keyTable = {
-            "Stock Symbol",
-            "Last Price",
-            "Change",
-            "Timestamp",
-            "Open",
-            "Close",
-            "Day's Range",
-            "Volume"
-        };
-        final Integer upId = R.drawable.up;
-        final Integer downId = R.drawable.down;
+            rootView = inflater.inflate(R.layout.fragment_current, container, false);
+            final ArrayList<String> stockTable = new ArrayList<>();
+            final String[] keyTable = {
+                    "Stock Symbol",
+                    "Last Price",
+                    "Change",
+                    "Timestamp",
+                    "Open",
+                    "Close",
+                    "Day's Range",
+                    "Volume"
+            };
+            final Integer upId = R.drawable.up;
+            final Integer downId = R.drawable.down;
 
-        final ProgressBar progressBar = rootView.findViewById(R.id.stockDetailsProgressBar);
+            final ProgressBar progressBar = rootView.findViewById(R.id.stockDetailsProgressBar);
 
-        RequestQueue queue = Volley.newRequestQueue(getActivity().getApplicationContext());
-        String symbol = getActivity().getIntent().getStringExtra("symbol");
-        String url = "http://stocksearch-env.us-west-1.elasticbeanstalk.com/?stock_symbolTable=" + symbol.substring(0, symbol.indexOf("-"));
-        JsonObjectRequest jsObjRequest = new JsonObjectRequest
-                (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+            RequestQueue queue = Volley.newRequestQueue(getActivity().getApplicationContext());
+            String symbol = getActivity().getIntent().getStringExtra("symbol");
+            String url = "http://stocksearch-env.us-west-1.elasticbeanstalk.com/?stock_symbolTable=" + symbol.substring(0, symbol.indexOf("-"));
+            JsonObjectRequest jsObjRequest = new JsonObjectRequest
+                    (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
 
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        try {
-                            progressBar.setVisibility(View.GONE);
+                        @Override
+                        public void onResponse(JSONObject response) {
+                            try {
+                                progressBar.setVisibility(View.GONE);
 
-                            String symbolTable = response.getString("Stock Ticker Symbol");
-                            String priceTable = response.getString("Last Price");
-                            String changeTable = response.getString("Change");
-                            String timeStampTable = response.getString("TimeStamp");
-                            String openTable = response.getString("Open");
-                            String closeTable = response.getString("Close");
-                            String rangeTable = response.getString("Days Range");
-                            String volumeTable = response.getString("Volume");
-                            String changePercentTable = response.getString("Change Percent");
-                            String change = changeTable + " (" + changePercentTable + ") ";
-                            stockTable.add(symbolTable);
-                            stockTable.add(priceTable);
-                            stockTable.add(change);
-                            stockTable.add(timeStampTable);
-                            stockTable.add(openTable);
-                            stockTable.add(closeTable);
-                            stockTable.add(rangeTable);
-                            stockTable.add(volumeTable);
+                                String symbolTable = response.getString("Stock Ticker Symbol");
+                                String priceTable = response.getString("Last Price");
+                                String changeTable = response.getString("Change");
+                                String timeStampTable = response.getString("TimeStamp");
+                                String openTable = response.getString("Open");
+                                String closeTable = response.getString("Close");
+                                String rangeTable = response.getString("Days Range");
+                                String volumeTable = response.getString("Volume");
+                                String changePercentTable = response.getString("Change Percent");
+                                String change = changeTable + " (" + changePercentTable + ") ";
+                                stockTable.add(symbolTable);
+                                stockTable.add(priceTable);
+                                stockTable.add(change);
+                                stockTable.add(timeStampTable);
+                                stockTable.add(openTable);
+                                stockTable.add(closeTable);
+                                stockTable.add(rangeTable);
+                                stockTable.add(volumeTable);
 
-                            ListView stockDetails = rootView.findViewById(R.id.stockDetailsListView);
-                            stockDetails.setVisibility(View.VISIBLE);
-                            ListVIewAdapter arrayAdapter;
+                                ListView stockDetails = rootView.findViewById(R.id.stockDetailsListView);
+                                stockDetails.setVisibility(View.VISIBLE);
+                                ListVIewAdapter arrayAdapter;
 
-                            if (Objects.equals(changeTable.substring(0,1), "-")){
-                                arrayAdapter = new ListVIewAdapter(getActivity(),keyTable, stockTable, downId);
-                            } else {
-                                arrayAdapter = new ListVIewAdapter(getActivity(),keyTable, stockTable, upId);
+                                if (Objects.equals(changeTable.substring(0,1), "-")){
+                                    arrayAdapter = new ListVIewAdapter(getActivity(),keyTable, stockTable, downId);
+                                } else {
+                                    arrayAdapter = new ListVIewAdapter(getActivity(),keyTable, stockTable, upId);
+                                }
+
+                                stockDetails.setAdapter(arrayAdapter);
+
+                            }catch (Exception ex) {
+                                ex.printStackTrace();
                             }
-
-                            stockDetails.setAdapter(arrayAdapter);
-
-                        }catch (Exception ex) {
-                            ex.printStackTrace();
                         }
-                    }
-                }, new Response.ErrorListener() {
+                    }, new Response.ErrorListener() {
 
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        // TODO Auto-generated method stub
-                        Log.i("error", String.valueOf(error));
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            // TODO Auto-generated method stub
+                            Log.i("error", String.valueOf(error));
 
-                    }
-                });
+                        }
+                    });
 
-        jsObjRequest.setRetryPolicy(new DefaultRetryPolicy(
-                4000,
-                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
-                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-        queue.add(jsObjRequest);
+            jsObjRequest.setRetryPolicy(new DefaultRetryPolicy(
+                    4000,
+                    DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                    DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+            queue.add(jsObjRequest);
+
+        }
 
         return rootView;
     }
