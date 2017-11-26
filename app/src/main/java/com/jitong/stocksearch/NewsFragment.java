@@ -1,5 +1,6 @@
 package com.jitong.stocksearch;
 
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -86,6 +87,7 @@ public class NewsFragment extends Fragment {
                                     newsAuthor.add("Author: " + author_inJSON);
                                     newsDate.add("Date: " + newsDateArray.getString(i));
                                     newsLink.add(newsLinkArray.getString(i));
+                                }
 
                                     NewsAdapter arrayAdapter = new NewsAdapter(getActivity(),newsTitle, newsAuthor, newsDate);;
                                     newsListView.setAdapter(arrayAdapter);
@@ -97,12 +99,20 @@ public class NewsFragment extends Fragment {
                                                                 int position, long id) {
 
                                             Intent intent = new Intent(Intent.ACTION_VIEW,Uri.parse(newsLink.get(position)));
-                                            startActivity(intent);
+                                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                            intent.setPackage("com.android.chrome");
+                                            try {
+                                                startActivity(intent);
+                                            } catch (ActivityNotFoundException ex) {
+                                                // Chrome browser presumably not installed so allow user to choose instead
+                                                intent.setPackage(null);
+                                                startActivity(intent);
+                                            }
 
                                         }
                                     });
 
-                                }
+
 
                             }catch (Exception ex) {
                                 ex.printStackTrace();

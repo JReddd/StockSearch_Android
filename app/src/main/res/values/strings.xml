@@ -6,6 +6,8 @@
     <string name="favorites">Favorites</string>
     <string name="autorefresh">AutoRefresh </string>
     <string name="stock_details">Stock Details</string>
+    <string name="indicators">Indicators</string>
+    <string name="change">Change</string>
     <string-array name="sort_by">
         <item>Sort by</item>
         <item>Default</item>
@@ -17,6 +19,17 @@
         <item>Order</item>
         <item>Ascending</item>
         <item>Descending</item>
+    </string-array>
+    <string-array name="indicators">
+        <item>Price</item>
+        <item>SMA</item>
+        <item>EMA</item>
+        <item>STOCH</item>
+        <item>RSI</item>
+        <item>ADX</item>
+        <item>CCI</item>
+        <item>BBANDS</item>
+        <item>MACD</item>
     </string-array>
     <string name="title_activity_second">SecondActivity</string>
     <string name="tab_text_1">CURRENT</string>

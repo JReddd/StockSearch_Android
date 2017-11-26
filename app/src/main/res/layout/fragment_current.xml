@@ -7,62 +7,118 @@
 
     <!-- TODO: Update blank fragment layout -->
 
-    <RelativeLayout
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <TextView
-            android:id="@+id/stockDetailsTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true"
-            android:layout_marginStart="22dp"
-            android:layout_marginTop="19dp"
-            android:text="@string/stock_details"
-            android:textColor="@android:color/black"
-            android:textSize="24sp"
-            android:textStyle="bold" />
-
-        <ImageView
-            android:id="@+id/emptyStarImageView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_marginEnd="20dp"
-            android:layout_marginTop="10dp"
-            android:src="@drawable/empty" />
-
-        <ImageView
-            android:id="@+id/fbImageView"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_alignParentEnd="true"
-            android:layout_marginEnd="80dp"
-            android:layout_marginTop="15dp"
-            android:src="@drawable/facebook" />
-
-        <ListView
-            android:id="@+id/stockDetailsListView"
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_below="@+id/emptyStarImageView"
-            android:paddingEnd="20dp"
-            android:paddingStart="20dp"
-            android:paddingTop="20dp"
-            android:visibility="gone">
+            android:layout_height="1000dp">
 
-        </ListView>
+            <TextView
+                android:id="@+id/stockDetailsTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
+                android:layout_marginStart="22dp"
+                android:layout_marginTop="19dp"
+                android:text="@string/stock_details"
+                android:textColor="@android:color/black"
+                android:textSize="24sp"
+                android:textStyle="bold" />
 
-        <ProgressBar
-            android:id="@+id/stockDetailsProgressBar"
-            style="?android:attr/progressBarStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_centerHorizontal="true"
-            android:indeterminateTint="@android:color/black"/>
+            <ImageView
+                android:id="@+id/emptyStarImageView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_marginEnd="20dp"
+                android:layout_marginTop="10dp"
+                android:src="@drawable/empty" />
 
-    </RelativeLayout>
+            <ImageView
+                android:id="@+id/fbImageView"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_alignParentEnd="true"
+                android:layout_marginEnd="80dp"
+                android:layout_marginTop="15dp"
+                android:src="@drawable/facebook" />
+
+            <ListView
+                android:id="@+id/stockDetailsListView"
+                android:layout_width="match_parent"
+                android:layout_height="400dp"
+                android:layout_below="@+id/emptyStarImageView"
+                android:paddingEnd="20dp"
+                android:paddingStart="20dp"
+                android:paddingTop="20dp"
+                android:visibility="gone">
+
+            </ListView>
+
+            <ProgressBar
+                android:id="@+id/stockDetailsProgressBar"
+                style="?android:attr/progressBarStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="false"
+                android:layout_marginTop="250dp"
+                android:indeterminateTint="@android:color/black" />
+
+            <TextView
+                android:id="@+id/indicatorsTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_marginStart="11dp"
+                android:layout_marginTop="433dp"
+                android:text="@string/indicators"
+                android:textColor="@android:color/black"
+                android:textSize="22sp"
+                android:textStyle="bold"/>
+
+            <Spinner
+                android:id="@+id/indicatorSpinner"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="140dp"
+                android:layout_marginTop="425dp" />
+
+            <Button
+                android:id="@+id/indicatorButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="425dp"
+                android:layout_marginStart="260dp"
+                android:background="@android:color/transparent"
+                android:text="@string/change"
+                android:textColor="@color/black"
+                android:textAllCaps="false"
+                android:textSize="22sp"/>
+
+            <WebView
+                android:id="@+id/indicatorWebView"
+                android:layout_width="fill_parent"
+                android:layout_height="500dp"
+                android:layout_marginTop="480dp"
+                android:focusable="false"
+                android:focusableInTouchMode="false"
+                android:visibility="gone"/>
+
+            <ProgressBar
+                android:id="@+id/indicatorsProgressBar"
+                style="?android:attr/progressBarStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="false"
+                android:layout_marginTop="600dp"
+                android:indeterminateTint="@android:color/black" />
+
+        </RelativeLayout>
+    </ScrollView>
 
 </FrameLayout>
