@@ -1,6 +1,7 @@
 package com.jitong.stocksearch;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
@@ -15,6 +16,7 @@ import android.webkit.WebViewClient;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
@@ -43,6 +45,8 @@ public class CurrentFragment extends Fragment {
     private View rootView;
     private String selectedChart;
     private String selectedChartInSpinner;
+    private boolean tableDone;
+    private String sharedPreJson;
 
     public CurrentFragment() {
         // Required empty public constructor
@@ -57,6 +61,10 @@ public class CurrentFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         if (rootView == null) {
+
+            tableDone = false;
+            String symbol = getActivity().getIntent().getStringExtra("symbol");
+            final String realSymbol = symbol.substring(0, symbol.indexOf("-")).trim();
 
             rootView = inflater.inflate(R.layout.fragment_current, container, false);
             final ArrayList<String> stockTable = new ArrayList<>();
@@ -76,9 +84,9 @@ public class CurrentFragment extends Fragment {
             final ProgressBar progressBar = rootView.findViewById(R.id.stockDetailsProgressBar);
             final Button button = rootView.findViewById(R.id.indicatorButton);
 
+            //volley
             RequestQueue queue = Volley.newRequestQueue(getActivity().getApplicationContext());
-            final String symbol = getActivity().getIntent().getStringExtra("symbol");
-            final String realSymbol = symbol.substring(0, symbol.indexOf("-")).trim();
+
             String url = "http://stocksearch-env.us-west-1.elasticbeanstalk.com/?stock_symbolTable=" + realSymbol;
             JsonObjectRequest jsObjRequest = new JsonObjectRequest
                     (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
@@ -86,6 +94,8 @@ public class CurrentFragment extends Fragment {
                         @Override
                         public void onResponse(JSONObject response) {
                             try {
+
+                                tableDone = true;
                                 progressBar.setVisibility(View.GONE);
 
                                 String symbolTable = response.getString("Stock Ticker Symbol");
@@ -106,6 +116,8 @@ public class CurrentFragment extends Fragment {
                                 stockTable.add(closeTable);
                                 stockTable.add(rangeTable);
                                 stockTable.add(volumeTable);
+
+                                sharedPreJson = "{'symbol':'" + symbolTable + "','price':'" + priceTable + "','change':'" + change + "'}";
 
                                 ListView stockDetails = rootView.findViewById(R.id.stockDetailsListView);
                                 stockDetails.setVisibility(View.VISIBLE);
@@ -141,6 +153,34 @@ public class CurrentFragment extends Fragment {
 
             queue.add(jsObjRequest);
 
+            //favorite icon
+            final SharedPreferences sharedPref = getActivity().getSharedPreferences("favList",Context.MODE_PRIVATE);
+            final SharedPreferences.Editor editor = sharedPref.edit();
+
+
+            final ImageView emptyStarImageView = rootView.findViewById(R.id.emptyStarImageView);
+            final ImageView filledStarImageView = rootView.findViewById(R.id.filledStarImageView);
+
+            emptyStarImageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    emptyStarImageView.setVisibility(View.GONE);
+                    filledStarImageView.setVisibility(View.VISIBLE);
+
+                    editor.putString(realSymbol, sharedPreJson).apply();
+                }
+            });
+
+            filledStarImageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    filledStarImageView.setVisibility(View.GONE);
+                    emptyStarImageView.setVisibility(View.VISIBLE);
+                }
+            });
+
+
+            //spinner
             Spinner spinner = rootView.findViewById(R.id.indicatorSpinner);
             final List<String> spinnerList = new ArrayList<>();
 
@@ -176,6 +216,7 @@ public class CurrentFragment extends Fragment {
                 }
             });
 
+            //webView
             final WebView webview = rootView.findViewById(R.id.indicatorWebView);
             WebSettings webSettings = webview.getSettings();
             webSettings.setJavaScriptEnabled(true);
@@ -206,6 +247,8 @@ public class CurrentFragment extends Fragment {
 
             });
 
+
+            //button
             button.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
                     webview.evaluateJavascript("javascript:show" + selectedChartInSpinner + "('"+realSymbol+"')", new ValueCallback<String>() {

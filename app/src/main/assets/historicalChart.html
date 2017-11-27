@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>historical chart</title>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+	<script src="https://code.highcharts.com/stock/highstock.js"></script>
+	<script src="https://code.highcharts.com/stock/modules/exporting.js"></script>
+</head>
+<body>
+
+<div id="historicalChartsCon"></div>
+
+<script type="text/javascript">
+
+function showHistoricalChart(quote){
+	//Historical Chart
+			$.ajax({
+				url : 'http://stocksearch-env.us-west-1.elasticbeanstalk.com/',
+				type : 'GET',
+				data : {
+					'hisChart': quote
+				},
+				dataType:'json',
+				success : function(data) {
+
+					try{
+						if (data[0][0] == 0) {
+
+							//error
+
+						} else {
+
+							Highcharts.stockChart('historicalChartsCon', {
+
+								rangeSelector: {
+									buttons: [{
+										type: 'week',
+										count: 1,
+										text: '1w'
+									}, {
+										type: 'month',
+										count: 1,
+										text: '1m'
+									}, {
+										type: 'month',
+										count: 3,
+										text: '3m'
+									},
+									{
+										type: 'month',
+										count: 6,
+										text: '6m'
+									}
+
+									, {
+										type: 'YTD',
+										count: 1,
+										text: 'YTD'
+									},
+									{
+										type: 'year',
+										count: 1,
+										text: '1y'
+									}, {
+										type: 'all',
+										count: 1,
+										text: 'All'
+									}],
+									selected: 0
+								},
+
+								title: {
+									text: quote + ' Stock Price'
+								},
+                                subtitle: {
+                                    useHTML: true,
+                                    text: '<a href="https://www.alphavantage.co/" target="_blank">' +
+                                    'Source: Alpha Vantage</a>',
+                                    style:{
+                                        color: 'blue'
+                                    }
+                                },
+                                yAxis:{
+                                    title: {
+                                        text: 'Stock Value'
+                                    }
+                                },
+                                tooltip: {
+										valueDecimals: 2,
+										split:false
+								},
+								series: [{
+									name: quote + ' Stock Price',
+									data: data,
+									type: 'area'
+								}],
+                                responsive: {
+                                    rules: [{
+                                            condition: {
+                                            maxWidth: 500
+                                        },
+                                        chartOptions: {
+                                            rangeSelector: {
+                                                buttons: [{
+                                                    type: 'month',
+                                                    count: 1,
+                                                    text: '1m'
+                                                }, {
+                                                    type: 'month',
+                                                    count: 3,
+                                                    text: '3m'
+                                                },
+                                                {
+                                                    type: 'month',
+                                                    count: 6,
+                                                    text: '6m'
+                                                },
+                                                {
+                                                    type: 'year',
+                                                    count: 1,
+                                                    text: '1y'
+                                                }, {
+                                                    type: 'all',
+                                                    count: 1,
+                                                    text: 'All'
+                                                }],
+                                                selected: 0,
+                                                inputEnabled: false
+                                            }
+                                        }
+                                    }]
+                                }
+							});
+						}
+					}catch(e){
+
+					}	
+
+				},
+				error : function(request,error)
+				{
+
+				}
+
+			});
+}
+</script>
+
+</body>
+</html>

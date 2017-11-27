@@ -102,7 +102,7 @@
         android:entries="@array/sort_by"/>
 
     <Spinner
-        android:id="@+id/ClearSpinner"
+        android:id="@+id/orderSpinner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/AutoRefreshSwitch"
@@ -119,5 +119,13 @@
         android:layout_alignTop="@+id/AutoRefreshSwitch"
         android:layout_centerHorizontal="true"
         android:visibility="gone"/>
+
+    <ListView
+        android:id="@+id/favoriteListView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/orderSpinner"
+        android:layout_marginTop="40dp"
+        android:background="@android:color/white" />
 
 </android.widget.RelativeLayout>
