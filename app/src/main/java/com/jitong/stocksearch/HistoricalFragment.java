@@ -35,8 +35,14 @@ public class HistoricalFragment extends Fragment {
 
             rootView = inflater.inflate(R.layout.fragment_historical, container, false);
 
-            final String symbol = getActivity().getIntent().getStringExtra("symbol");
-            final String realSymbol = symbol.substring(0, symbol.indexOf("-")).trim();
+            String symbol = getActivity().getIntent().getStringExtra("symbol");
+            final String realSymbol;
+
+            if (symbol.contains("-")){
+                realSymbol = symbol.substring(0, symbol.indexOf("-")).trim();
+            } else {
+                realSymbol = symbol;
+            }
 
             final WebView webview = rootView.findViewById(R.id.historicalWebView);
             WebSettings webSettings = webview.getSettings();

@@ -61,7 +61,16 @@ public class NewsFragment extends Fragment {
 
             RequestQueue queue = Volley.newRequestQueue(getActivity().getApplicationContext());
             String symbol = getActivity().getIntent().getStringExtra("symbol");
-            String url = "http://stocksearch-env.us-west-1.elasticbeanstalk.com/?news=" + symbol.substring(0, symbol.indexOf("-"));
+            final String realSymbol;
+
+            if (symbol.contains("-")){
+                realSymbol = symbol.substring(0, symbol.indexOf("-")).trim();
+            } else {
+                realSymbol = symbol;
+            }
+
+
+            String url = "http://stocksearch-env.us-west-1.elasticbeanstalk.com/?news=" + realSymbol;
             JsonObjectRequest jsObjRequest = new JsonObjectRequest
                     (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
 

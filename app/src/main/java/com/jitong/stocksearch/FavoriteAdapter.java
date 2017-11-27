@@ -1,6 +1,7 @@
 package com.jitong.stocksearch;
 
 import android.app.Activity;
+import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -44,7 +45,9 @@ public class FavoriteAdapter extends ArrayAdapter {
         changeFavTextView.setText(changeFav.get(position));
 
         if (changeFav.get(position).substring(0,1).equals("-")){
-
+            changeFavTextView.setTextColor(Color.RED);
+        }else {
+            changeFavTextView.setTextColor(Color.GREEN);
         }
 
         return rowView;

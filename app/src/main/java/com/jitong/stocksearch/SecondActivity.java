@@ -45,9 +45,16 @@ public class SecondActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         String symbol = intent.getStringExtra("symbol");
+        String realSymbol;
 
         //set title
-        setTitle(symbol.substring(0, symbol.indexOf("-")));
+        if (symbol.contains("-")){
+            realSymbol = symbol.substring(0, symbol.indexOf("-"));
+            setTitle(realSymbol);
+        } else {
+            realSymbol = symbol;
+            setTitle(realSymbol);
+        }
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);

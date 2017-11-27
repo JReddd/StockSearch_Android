@@ -1,13 +1,16 @@
 package com.jitong.stocksearch;
 
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.ListView;
@@ -53,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        ArrayList<String> symbolFav = new ArrayList<>();
+        final ArrayList<String> symbolFav = new ArrayList<>();
         ArrayList<String> priceFav = new ArrayList<>();
         ArrayList<String> changeFav = new ArrayList<>();
 
@@ -90,5 +93,19 @@ public class MainActivity extends AppCompatActivity {
         FavoriteAdapter arrayAdapter = new FavoriteAdapter(this, symbolFav, priceFav, changeFav);
         ListView favoriteListView = findViewById(R.id.favoriteListView);
         favoriteListView.setAdapter(arrayAdapter);
+
+        favoriteListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view,
+                                    int position, long id) {
+
+                //go to the stock details activity
+                Intent intent = new Intent(getApplicationContext(), SecondActivity.class);
+                intent.putExtra("symbol", symbolFav.get(position));
+                startActivity(intent);
+
+            }
+        });
     }
 }

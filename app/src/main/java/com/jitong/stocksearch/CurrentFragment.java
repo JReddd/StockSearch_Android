@@ -33,10 +33,13 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.security.PrivateKey;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 
@@ -46,6 +49,7 @@ public class CurrentFragment extends Fragment {
     private String selectedChart;
     private String selectedChartInSpinner;
     private boolean tableDone;
+    private boolean inFavList = false;
     private String sharedPreJson;
 
     public CurrentFragment() {
@@ -64,7 +68,13 @@ public class CurrentFragment extends Fragment {
 
             tableDone = false;
             String symbol = getActivity().getIntent().getStringExtra("symbol");
-            final String realSymbol = symbol.substring(0, symbol.indexOf("-")).trim();
+            final String realSymbol;
+
+            if (symbol.contains("-")){
+                realSymbol = symbol.substring(0, symbol.indexOf("-")).trim();
+            } else {
+                realSymbol = symbol;
+            }
 
             rootView = inflater.inflate(R.layout.fragment_current, container, false);
             final ArrayList<String> stockTable = new ArrayList<>();
@@ -84,6 +94,14 @@ public class CurrentFragment extends Fragment {
             final ProgressBar progressBar = rootView.findViewById(R.id.stockDetailsProgressBar);
             final Button button = rootView.findViewById(R.id.indicatorButton);
 
+            final ImageView emptyStarImageView = rootView.findViewById(R.id.emptyStarImageView);
+            final ImageView filledStarImageView = rootView.findViewById(R.id.filledStarImageView);
+            final ImageView fbImageView = rootView.findViewById(R.id.fbImageView);
+
+            emptyStarImageView.setEnabled(false);
+            filledStarImageView.setEnabled(false);
+            fbImageView.setEnabled(false);
+
             //volley
             RequestQueue queue = Volley.newRequestQueue(getActivity().getApplicationContext());
 
@@ -97,6 +115,9 @@ public class CurrentFragment extends Fragment {
 
                                 tableDone = true;
                                 progressBar.setVisibility(View.GONE);
+                                emptyStarImageView.setEnabled(true);
+                                filledStarImageView.setEnabled(true);
+                                fbImageView.setEnabled(true);
 
                                 String symbolTable = response.getString("Stock Ticker Symbol");
                                 String priceTable = response.getString("Last Price");
@@ -157,9 +178,20 @@ public class CurrentFragment extends Fragment {
             final SharedPreferences sharedPref = getActivity().getSharedPreferences("favList",Context.MODE_PRIVATE);
             final SharedPreferences.Editor editor = sharedPref.edit();
 
+            Map<String, ?> allEntries = sharedPref.getAll();
+            for (Map.Entry<String, ?> entry : allEntries.entrySet()) {
+                //Log.i("map values", entry.getKey() + ": " + entry.getValue().toString());
 
-            final ImageView emptyStarImageView = rootView.findViewById(R.id.emptyStarImageView);
-            final ImageView filledStarImageView = rootView.findViewById(R.id.filledStarImageView);
+                if (entry.getKey().equals(realSymbol)){
+                    inFavList = true;
+                }
+
+            }
+
+            if (inFavList){
+                emptyStarImageView.setVisibility(View.GONE);
+                filledStarImageView.setVisibility(View.VISIBLE);
+            }
 
             emptyStarImageView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -176,6 +208,8 @@ public class CurrentFragment extends Fragment {
                 public void onClick(View view) {
                     filledStarImageView.setVisibility(View.GONE);
                     emptyStarImageView.setVisibility(View.VISIBLE);
+
+                    editor.remove(realSymbol).apply();
                 }
             });
 
@@ -229,7 +263,7 @@ public class CurrentFragment extends Fragment {
 
                 @Override
                 public void  onPageStarted(WebView view, String url, Bitmap favicon) {
-                    //设定加载开始的操作
+
                 }
 
                 @Override
@@ -248,7 +282,7 @@ public class CurrentFragment extends Fragment {
             });
 
 
-            //button
+            //button change indicator
             button.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
                     webview.evaluateJavascript("javascript:show" + selectedChartInSpinner + "('"+realSymbol+"')", new ValueCallback<String>() {
