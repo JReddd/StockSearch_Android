@@ -286,7 +286,7 @@ public class CurrentFragment extends Fragment {
                 public void onPageFinished(WebView view, String url) {
                     super.onPageFinished(view, url);
 
-                    fbImageView.setEnabled(true);
+                    //fbImageView.setEnabled(true);
 
                     webview.evaluateJavascript("javascript:showPrice('" + realSymbol + "')", new ValueCallback<String>() {
                         @Override
