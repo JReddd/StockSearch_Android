@@ -1,10 +1,8 @@
 package com.jitong.stocksearch;
 
-import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -18,15 +16,21 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.ListView;
 import android.widget.PopupMenu;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
+
 public class MainActivity extends AppCompatActivity {
+
+    private boolean ascending = true;
 
     public void getQuote(View view) {
 
@@ -72,30 +76,34 @@ public class MainActivity extends AppCompatActivity {
         stockSymbolTextView.setLoadingIndicator(
                 (android.widget.ProgressBar) findViewById(R.id.AutoCompleteProgressBar));
 
-        final ArrayList<String> symbolFav = new ArrayList<>();
-        final ArrayList<String> priceFav = new ArrayList<>();
-        final ArrayList<String> changeFav = new ArrayList<>();
+        SharedPreferences sharedPref = this.getSharedPreferences("favList",Context.MODE_PRIVATE);
+        final ListView favoriteListView = findViewById(R.id.favoriteListView);
 
         //favorite list
-        SharedPreferences sharedPref = this.getSharedPreferences("favList",Context.MODE_PRIVATE);
+        final ArrayList<StockInFav> StockInFavArrayList = new ArrayList<>();
         Map<String, ?> allEntries = sharedPref.getAll();
+
         for (Map.Entry<String, ?> entry : allEntries.entrySet()) {
-            Log.i("map values", entry.getKey() + ": " + entry.getValue().toString());
+            Log.i("favorite list", entry.getKey() + ": " + entry.getValue().toString());
 
             try {
 
                 JSONObject obj = new JSONObject(entry.getValue().toString());
-                symbolFav.add(obj.getString("symbol"));
-                priceFav.add(obj.getString("price"));
-                changeFav.add(obj.getString("change"));
+                String symbol = obj.getString("symbol");
+                double price = Double.parseDouble(obj.getString("price"));
+                double change = Double.parseDouble(obj.getString("change"));
+                double changePercent = Double.parseDouble(obj.getString("changePercent").replace("%",""));
+
+                StockInFavArrayList.add(new StockInFav(symbol,price,change,changePercent));
+
 
             } catch (JSONException e) {
                 e.printStackTrace();
             }
 
         }
-        FavoriteAdapter arrayAdapter = new FavoriteAdapter(this, symbolFav, priceFav, changeFav);
-        final ListView favoriteListView = findViewById(R.id.favoriteListView);
+        FavoriteAdapter arrayAdapter = new FavoriteAdapter(this, StockInFavArrayList);
+        Log.i("StockInFavArrayList", String.valueOf(StockInFavArrayList.get(0).getChangePercent()));
         favoriteListView.setAdapter(arrayAdapter);
 
         favoriteListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -106,8 +114,134 @@ public class MainActivity extends AppCompatActivity {
 
                 //go to the stock details activity
                 Intent intent = new Intent(getApplicationContext(), SecondActivity.class);
-                intent.putExtra("symbol", symbolFav.get(position));
+                intent.putExtra("symbol", StockInFavArrayList.get(position).getSymbol());
                 startActivity(intent);
+
+            }
+        });
+
+        //spinner sort by
+        Spinner spinner = this.findViewById(R.id.SortBySpinner);
+        final List<String> spinnerList = new ArrayList<>();
+
+        spinnerList.add("Sort By");
+        spinnerList.add("Default");
+        spinnerList.add("Symbol");
+        spinnerList.add("Price");
+        spinnerList.add("Change");
+        spinnerList.add("Change Percent");
+        ArrayAdapter spinnerAdapter = new ArrayAdapter(this,android.R.layout.simple_list_item_1,spinnerList);
+        spinner.setAdapter(spinnerAdapter);
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
+                ArrayList<StockInFav> StockInFavArrayList = new ArrayList<>();
+                SharedPreferences sharedPref = MainActivity.this.getSharedPreferences("favList",Context.MODE_PRIVATE);
+                Map<String, ?> allFavEntries = sharedPref.getAll();
+
+                for (Map.Entry<String, ?> entry : allFavEntries.entrySet()) {
+                    Log.i("in spinner", entry.getKey() + ": " + entry.getValue().toString());
+
+                    try {
+
+                        JSONObject obj = new JSONObject(entry.getValue().toString());
+                        String symbol = obj.getString("symbol");
+                        double price = Double.parseDouble(obj.getString("price"));
+                        double change = Double.parseDouble(obj.getString("change"));
+                        double changePercent = Double.parseDouble(obj.getString("changePercent").replace("%",""));
+
+                        StockInFavArrayList.add(new StockInFav(symbol,price,change,changePercent));
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+
+                switch (spinnerList.get(position)) {
+                    case "Symbol" :
+                        if (ascending){
+                            Collections.sort(StockInFavArrayList,StockInFav.SymbolComparator);
+                            FavoriteAdapter arrayAdapterSymbol = new FavoriteAdapter(MainActivity.this, StockInFavArrayList);
+                            favoriteListView.setAdapter(arrayAdapterSymbol);
+                        } else {
+                            Collections.sort(StockInFavArrayList,StockInFav.SymbolComparatorNeg);
+                            FavoriteAdapter arrayAdapterSymbol = new FavoriteAdapter(MainActivity.this, StockInFavArrayList);
+                            favoriteListView.setAdapter(arrayAdapterSymbol);
+                        }
+                        break;
+                    case "Price" :
+                        if (ascending){
+                            Collections.sort(StockInFavArrayList,StockInFav.PriceComparator);
+                            FavoriteAdapter arrayAdapterSymbol = new FavoriteAdapter(MainActivity.this, StockInFavArrayList);
+                            favoriteListView.setAdapter(arrayAdapterSymbol);
+                        } else {
+                            Collections.sort(StockInFavArrayList,StockInFav.PriceComparatorNeg);
+                            FavoriteAdapter arrayAdapterSymbol = new FavoriteAdapter(MainActivity.this, StockInFavArrayList);
+                            favoriteListView.setAdapter(arrayAdapterSymbol);
+                        }
+                        break;
+                    case "Change":
+                        if (ascending){
+                            Collections.sort(StockInFavArrayList,StockInFav.ChangeComparator);
+                            FavoriteAdapter arrayAdapterSymbol = new FavoriteAdapter(MainActivity.this, StockInFavArrayList);
+                            favoriteListView.setAdapter(arrayAdapterSymbol);
+                        } else {
+                            Collections.sort(StockInFavArrayList,StockInFav.ChangeComparatorNeg);
+                            FavoriteAdapter arrayAdapterSymbol = new FavoriteAdapter(MainActivity.this, StockInFavArrayList);
+                            favoriteListView.setAdapter(arrayAdapterSymbol);
+                        }
+                        break;
+                    case "Change percent":
+                        if (ascending){
+                            Collections.sort(StockInFavArrayList,StockInFav.ChangePercentComparator);
+                            FavoriteAdapter arrayAdapterSymbol = new FavoriteAdapter(MainActivity.this, StockInFavArrayList);
+                            favoriteListView.setAdapter(arrayAdapterSymbol);
+                        } else {
+                            Collections.sort(StockInFavArrayList,StockInFav.ChangePercentComparatorNeg);
+                            FavoriteAdapter arrayAdapterSymbol = new FavoriteAdapter(MainActivity.this, StockInFavArrayList);
+                            favoriteListView.setAdapter(arrayAdapterSymbol);
+                        }
+                        break;
+                    default:break;
+                }
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+        //spinner order
+        Spinner orderSpinner = this.findViewById(R.id.orderSpinner);
+        final List<String> orderSpinnerList = new ArrayList<>();
+
+        orderSpinnerList.add("Order");
+        orderSpinnerList.add("Ascending");
+        orderSpinnerList.add("Descending");
+        ArrayAdapter orderSpinnerAdapter = new ArrayAdapter(this,android.R.layout.simple_list_item_1,orderSpinnerList);
+        orderSpinner.setAdapter(orderSpinnerAdapter);
+        orderSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
+                switch (orderSpinnerList.get(position)) {
+                    case "Ascending" :
+                        ascending = true;
+                        break;
+                    case "Descending" :
+                        ascending = false;
+                        break;
+                    default:break;
+                }
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
 
             }
         });
@@ -131,12 +265,31 @@ public class MainActivity extends AppCompatActivity {
                                 break;
                             case R.id.yesMenu:
                                 SharedPreferences sharedPref = MainActivity.this.getSharedPreferences("favList",Context.MODE_PRIVATE);
-                                sharedPref.edit().remove(symbolFav.get(position)).apply();
-                                Log.e("delete",symbolFav.get(position));
-                                String deletedSymbol = symbolFav.get(position);
-                                symbolFav.remove(deletedSymbol);
-                                FavoriteAdapter arrayAdapter = new FavoriteAdapter(MainActivity.this, symbolFav, priceFav, changeFav);
-                                ListView favoriteListView = findViewById(R.id.favoriteListView);
+                                sharedPref.edit().remove(StockInFavArrayList.get(position).getSymbol()).apply();
+
+                                ArrayList<StockInFav> StockInFavArrayList = new ArrayList<>();
+                                Map<String, ?> allFavEntries = sharedPref.getAll();
+
+                                for (Map.Entry<String, ?> entry : allFavEntries.entrySet()) {
+                                    Log.i("delete", entry.getKey() + ": " + entry.getValue().toString());
+
+                                    try {
+
+                                        JSONObject obj = new JSONObject(entry.getValue().toString());
+                                        String symbol = obj.getString("symbol");
+                                        double price = Double.parseDouble(obj.getString("price"));
+                                        double change = Double.parseDouble(obj.getString("change"));
+                                        double changePercent = Double.parseDouble(obj.getString("changePercent").replace("%",""));
+
+                                        StockInFavArrayList.add(new StockInFav(symbol,price,change,changePercent));
+
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+
+                                }
+
+                                FavoriteAdapter arrayAdapter = new FavoriteAdapter(MainActivity.this, StockInFavArrayList);
                                 favoriteListView.setAdapter(arrayAdapter);
                                 break;
                             default:break;

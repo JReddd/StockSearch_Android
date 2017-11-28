@@ -151,7 +151,7 @@ public class CurrentFragment extends Fragment {
                                     stockTable.add(rangeTable);
                                     stockTable.add(volumeTable);
 
-                                    sharedPreJson = "{'symbol':'" + symbolTable + "','price':'" + priceTable + "','change':'" + change + "'}";
+                                    sharedPreJson = "{'symbol':'" + symbolTable + "','price':'" + priceTable + "','change':'" + changeTable + "','changePercent':'" + changePercentTable + "'}";
 
                                     ListView stockDetails = rootView.findViewById(R.id.stockDetailsListView);
                                     stockDetails.setVisibility(View.VISIBLE);

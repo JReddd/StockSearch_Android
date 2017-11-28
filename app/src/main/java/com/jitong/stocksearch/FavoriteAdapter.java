@@ -7,7 +7,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -19,16 +18,13 @@ import java.util.ArrayList;
 public class FavoriteAdapter extends ArrayAdapter {
 
     private final Activity context;
-    private final ArrayList<String> symbolFav;
-    private final ArrayList<String> priceFav;
-    private final ArrayList<String> changeFav;
 
-    public FavoriteAdapter(@NonNull Activity context, ArrayList<String> symbolFav, ArrayList<String> priceFav, ArrayList<String> changeFav) {
-        super(context, R.layout.list_single, symbolFav);
+    private final ArrayList<StockInFav> stockInFavArrayList;
+
+    public FavoriteAdapter(@NonNull Activity context, ArrayList<StockInFav> stockInFavArrayList) {
+        super(context, R.layout.list_single,stockInFavArrayList);
         this.context = context;
-        this.symbolFav = symbolFav;
-        this.priceFav = priceFav;
-        this.changeFav = changeFav;
+        this.stockInFavArrayList = stockInFavArrayList;
     }
 
     @Override
@@ -40,11 +36,13 @@ public class FavoriteAdapter extends ArrayAdapter {
         TextView priceFavTextView = rowView.findViewById(R.id.priceFavTextView);
         TextView changeFavTextView = rowView.findViewById(R.id.changeFavTextView);
 
-        symbolFavTextView.setText(symbolFav.get(position));
-        priceFavTextView.setText(priceFav.get(position));
-        changeFavTextView.setText(changeFav.get(position));
+        symbolFavTextView.setText(stockInFavArrayList.get(position).getSymbol());
+        String priceFav = String.valueOf(stockInFavArrayList.get(position).getPrice());
+        priceFavTextView.setText(priceFav);
+        String changeFav = stockInFavArrayList.get(position).getChange() + " (" + stockInFavArrayList.get(position).getChangePercent() + "%) ";
+        changeFavTextView.setText(changeFav);
 
-        if (changeFav.get(position).substring(0,1).equals("-")){
+        if (stockInFavArrayList.get(position).getChange() < 0){
             changeFavTextView.setTextColor(Color.RED);
         }else {
             changeFavTextView.setTextColor(Color.GREEN);
