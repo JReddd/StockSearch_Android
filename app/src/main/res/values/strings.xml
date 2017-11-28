@@ -43,4 +43,6 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="hello_blank_fragment1">Historical fragment</string>
     <string name="hello_blank_fragment2">News fragment</string>
+
+    <string name="facebook_app_id">234995460371941</string>
 </resources>

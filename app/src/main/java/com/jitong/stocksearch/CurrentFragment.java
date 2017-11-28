@@ -1,5 +1,6 @@
 package com.jitong.stocksearch;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
@@ -9,6 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.JavascriptInterface;
 import android.webkit.ValueCallback;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -31,6 +33,8 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.facebook.share.model.ShareLinkContent;
+import com.facebook.share.widget.ShareDialog;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -51,6 +55,7 @@ public class CurrentFragment extends Fragment {
     private boolean tableDone;
     private boolean inFavList = false;
     private String sharedPreJson;
+    private String urlPic;
 
     public CurrentFragment() {
         // Required empty public constructor
@@ -117,7 +122,7 @@ public class CurrentFragment extends Fragment {
                                 progressBar.setVisibility(View.GONE);
                                 emptyStarImageView.setEnabled(true);
                                 filledStarImageView.setEnabled(true);
-                                fbImageView.setEnabled(true);
+
 
                                 String symbolTable = response.getString("Stock Ticker Symbol");
                                 String priceTable = response.getString("Last Price");
@@ -213,7 +218,6 @@ public class CurrentFragment extends Fragment {
                 }
             });
 
-
             //spinner
             Spinner spinner = rootView.findViewById(R.id.indicatorSpinner);
             final List<String> spinnerList = new ArrayList<>();
@@ -255,6 +259,8 @@ public class CurrentFragment extends Fragment {
             WebSettings webSettings = webview.getSettings();
             webSettings.setJavaScriptEnabled(true);
             webSettings.setDomStorageEnabled(true);
+            webview.addJavascriptInterface(new JsInterface(getActivity()), "AndroidWebView");
+
             webSettings.setJavaScriptCanOpenWindowsAutomatically(true);
             webSettings.setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
 
@@ -270,6 +276,8 @@ public class CurrentFragment extends Fragment {
                 public void onPageFinished(WebView view, String url) {
                     super.onPageFinished(view, url);
 
+                    fbImageView.setEnabled(true);
+
                     webview.evaluateJavascript("javascript:showPrice('" + realSymbol + "')", new ValueCallback<String>() {
                         @Override
                         public void onReceiveValue(String value) {
@@ -277,8 +285,23 @@ public class CurrentFragment extends Fragment {
                     });
 
                     selectedChart = "Price";
+
                 }
 
+            });
+
+            //facebook share
+            fbImageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    ShareLinkContent content = new ShareLinkContent.Builder()
+                            .setContentUrl(Uri.parse(urlPic))
+                            .build();
+                    ShareDialog shareDialog = new ShareDialog(getActivity());
+                    shareDialog.show(content, ShareDialog.Mode.AUTOMATIC);
+
+                }
             });
 
 
@@ -306,6 +329,23 @@ public class CurrentFragment extends Fragment {
         }
 
         return rootView;
+    }
+
+    public class JsInterface {
+
+        private Context mContext;
+
+        public JsInterface(Context context) {
+            this.mContext = context;
+        }
+
+        @JavascriptInterface
+        public void showInfoFromJs(String urlPicInJs) {
+
+            urlPic = urlPicInJs;
+
+        }
+
     }
 
 }

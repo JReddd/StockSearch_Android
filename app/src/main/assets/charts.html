@@ -11,16 +11,16 @@
 	<div id="charts"></div>
 
 
-<script>
+	<script>
 
-	function sb(){
-		$("#charts").html("sb");
-	}
+		function sb(){
+			$("#charts").html("sb");
+		}
 
 		function showPrice(quote){
 
 			//Price
-		$.ajax({
+			$.ajax({
 
 				url : 'http://stocksearch-env.us-west-1.elasticbeanstalk.com/',
 				type : 'GET',
@@ -50,43 +50,43 @@
 						volumeY_reverse = volumeY.reverse();
 
 						priceChart = new Object();
-			priceChart = {
-				title: {
-					text: symbolPrice + ' Stock Price and Volume'
-				},
-				subtitle: {
-					useHTML: true,
-					text: '<a href="https://www.alphavantage.co/" target="_blank">' +
-					'Source: Alpha Vantage</a>',
-					style:{
-						color: 'blue'
-					}
-				},
-				colors:['#0000ff','red'],
-				chart:{
-					zoomType:'x'
-				},
-				xAxis: {
-					categories:dataFormatPrice,
+						priceChart = {
+							title: {
+								text: symbolPrice + ' Stock Price and Volume'
+							},
+							subtitle: {
+								useHTML: true,
+								text: '<a href="https://www.alphavantage.co/" target="_blank">' +
+								'Source: Alpha Vantage</a>',
+								style:{
+									color: 'blue'
+								}
+							},
+							colors:['#0000ff','red'],
+							chart:{
+								zoomType:'x'
+							},
+							xAxis: {
+								categories:dataFormatPrice,
 
-					tickPositioner: function() {
-						"use strict";
-						let res = [];
-						for(let i = 0; i < this.categories.length; i++) {
-							if(i % 10 == 0) res.push(this.categories.length - 1 - i);
-						}
-						return res;
-					}
-				},
-				yAxis: [{
-					title: {
-						text: 'Stock Price'
-					},
-					labels: {
-						formatter: function () {
-							return this.value;
-						}
-					}
+								tickPositioner: function() {
+									"use strict";
+									let res = [];
+									for(let i = 0; i < this.categories.length; i++) {
+										if(i % 10 == 0) res.push(this.categories.length - 1 - i);
+									}
+									return res;
+								}
+							},
+							yAxis: [{
+								title: {
+									text: 'Stock Price'
+								},
+								labels: {
+									formatter: function () {
+										return this.value;
+									}
+								}
 					    },{ // Secondary yAxis
 					    	title: {
 					    		text: 'Volume'
@@ -125,590 +125,803 @@
 					    	type:'column',
 					    	yAxis: 1
 					    }]
-			};
-			var myChart = Highcharts.chart('charts', priceChart);
+					};
+					var myChart = Highcharts.chart('charts', priceChart);
 
-					}catch(e){
+					var exportUrl = 'http://export.highcharts.com/';
+					var optionsStr = JSON.stringify(priceChart),
+					dataString = encodeURI('async=true&type=jpeg&width=400&options=' + optionsStr);
+		        		if (window.XDomainRequest) {
+				            var xdr = new XDomainRequest();
+				            xdr.open("post", exportUrl+ '?' + dataString);
+				            xdr.onload = function () {
+				                console.log(xdr.responseText);
+				                urlPic = exportUrl + xdr.responseText ;
+				                 window.AndroidWebView.showInfoFromJs(urlPic);
+				            };
+				            xdr.send();
+				        } else {
+				        	$.ajax({
+				        		type: 'POST',
+				        		data: dataString,
+				        		url: exportUrl,
+				        		success: function (data) {
+				        			console.log('get the file from relative url: ', data);
+				        			urlPic = exportUrl + data;
+				        			 window.AndroidWebView.showInfoFromJs(urlPic);
 
-					}
+				        		},
+				        		error: function (err) {
+				        			debugger;
+				        			console.log('error', err.statusText)
+				        		}
+				        	});
+				        }
 
-				},
-				error : function(request,error)
-				{
+
+
+				}catch(e){
 
 				}
+
+			},
+			error : function(request,error)
+			{
+
+			}
 		});
 			
-				
+			
+
 		}
 
 		//SMA chart
 		function showSMA(quote){
 
 				//SMA
-		$.ajax({
+				$.ajax({
 
-				url : 'http://stocksearch-env.us-west-1.elasticbeanstalk.com/',
-				type : 'GET',
-				data : {
-					'SMA': quote
-				},
-				dataType:'json',
-				success : function(data) {
+					url : 'http://stocksearch-env.us-west-1.elasticbeanstalk.com/',
+					type : 'GET',
+					data : {
+						'SMA': quote
+					},
+					dataType:'json',
+					success : function(data) {
 
-					try{
+						try{
 
-						dataX = data['timeSeries'];
-						if (dataX) {
-							dataX.length = 125;
-							dataX_reverse = dataX.reverse();
+							dataX = data['timeSeries'];
+							if (dataX) {
+								dataX.length = 125;
+								dataX_reverse = dataX.reverse();
 
-							dataFormatSMA = [];
-							for (var i = 0; i < 125; i++) {
-								dataFormatSMA.push(dataX_reverse[i].substring(5,7)+'/'+dataX_reverse[i].substring(8,10));
+								dataFormatSMA = [];
+								for (var i = 0; i < 125; i++) {
+									dataFormatSMA.push(dataX_reverse[i].substring(5,7)+'/'+dataX_reverse[i].substring(8,10));
+								}
 							}
+
+							symbolSMA = data['Stock Ticker Symbol'];
+							valueSMA = data['SMA'];
+							SMAY_reverse = valueSMA.reverse();
+
+							SMAChart = new Object();
+							SMAChart = {
+
+								title: {
+									text: 'Simple Moving Average (SMA)'
+								},
+								subtitle: {
+									useHTML: true,
+									text: '<a href="https://www.alphavantage.co/" target="_blank">' +
+									'Source: Alpha Vantage</a>',
+									style:{
+										color: 'blue'
+									}
+								},
+								colors:['rgb(232,153,148)'],
+								chart:{
+									zoomType:'x'
+								},
+								xAxis: {
+									categories:dataFormatSMA,
+									min: 0,
+									tickPositioner: function() {
+										"use strict";
+										let res = [];
+										for(let i = 0; i < this.categories.length; i++) {
+											if(i % 10 == 0) res.push(this.categories.length - 1 - i);
+										}
+										return res;
+									}
+								},
+								yAxis: {
+									title: {
+										text: 'SMA'
+									},
+									labels: {
+										formatter: function () {
+											return this.value;
+										}
+									}
+								},
+								series: [{
+									name: symbolSMA,
+									data:SMAY_reverse,
+									threshold:null
+								}]
+							};
+							var myChart = Highcharts.chart('charts', SMAChart);	
+
+							var exportUrl = 'http://export.highcharts.com/';
+							var optionsStr = JSON.stringify(SMAChart),
+							dataString = encodeURI('async=true&type=jpeg&width=400&options=' + optionsStr);
+				        		if (window.XDomainRequest) {
+						            var xdr = new XDomainRequest();
+						            xdr.open("post", exportUrl+ '?' + dataString);
+						            xdr.onload = function () {
+						                console.log(xdr.responseText);
+						                urlPic = exportUrl + xdr.responseText ;
+						                window.AndroidWebView.showInfoFromJs(urlPic);
+						            };
+						            xdr.send();
+						        } else {
+						        	$.ajax({
+						        		type: 'POST',
+						        		data: dataString,
+						        		url: exportUrl,
+						        		success: function (data) {
+						        			console.log('get the file from relative url: ', data);
+						        			urlPic = exportUrl + data;
+						        			window.AndroidWebView.showInfoFromJs(urlPic);
+
+						        		},
+						        		error: function (err) {
+						        			debugger;
+						        			console.log('error', err.statusText)
+						        		}
+						        	});
+						        }
+
+						}catch(e){
+
 						}
 
-						symbolSMA = data['Stock Ticker Symbol'];
-						valueSMA = data['SMA'];
-						SMAY_reverse = valueSMA.reverse();
-
-						SMAChart = new Object();
-				SMAChart = {
-
-					title: {
-						text: 'Simple Moving Average (SMA)'
 					},
-					subtitle: {
-						useHTML: true,
-						text: '<a href="https://www.alphavantage.co/" target="_blank">' +
-						'Source: Alpha Vantage</a>',
-						style:{
-							color: 'blue'
-						}
-					},
-					colors:['rgb(232,153,148)'],
-					chart:{
-							zoomType:'x'
-						},
-					xAxis: {
-						categories:dataFormatSMA,
-						min: 0,
-						tickPositioner: function() {
-							"use strict";
-							let res = [];
-							for(let i = 0; i < this.categories.length; i++) {
-								if(i % 10 == 0) res.push(this.categories.length - 1 - i);
-							}
-							return res;
-						}
-					},
-					yAxis: {
-						title: {
-							text: 'SMA'
-						},
-						labels: {
-							formatter: function () {
-								return this.value;
-							}
-						}
-					},
-					series: [{
-						name: symbolSMA,
-						data:SMAY_reverse,
-						threshold:null
-					}]
-				};
-				var myChart = Highcharts.chart('charts', SMAChart);	
-
-					}catch(e){
+					error : function(request,error)
+					{
 
 					}
-
-				},
-				error : function(request,error)
-				{
-
-				}
-		});	
+				});	
 
 				
 
-		}
+			}
 
 		//EMA chart
 		function showEMA(quote){
 
-					
+
 				//EMA
-		$.ajax({
+				$.ajax({
 
-				url : 'http://stocksearch-env.us-west-1.elasticbeanstalk.com/',
-				type : 'GET',
-				data : {
-					'EMA': quote
-				},
-				dataType:'json',
-				success : function(data) {
+					url : 'http://stocksearch-env.us-west-1.elasticbeanstalk.com/',
+					type : 'GET',
+					data : {
+						'EMA': quote
+					},
+					dataType:'json',
+					success : function(data) {
 
-					try{
+						try{
 
-						dataX = data['timeSeries'];
-						if (dataX) {
-							dataX.length = 125;
-							dataX_reverse = dataX.reverse();
+							dataX = data['timeSeries'];
+							if (dataX) {
+								dataX.length = 125;
+								dataX_reverse = dataX.reverse();
 
-							dataFormatEMA = [];
-							for (var i = 0; i < 125; i++) {
-								dataFormatEMA.push(dataX_reverse[i].substring(5,7)+'/'+dataX_reverse[i].substring(8,10));
+								dataFormatEMA = [];
+								for (var i = 0; i < 125; i++) {
+									dataFormatEMA.push(dataX_reverse[i].substring(5,7)+'/'+dataX_reverse[i].substring(8,10));
+								}
 							}
-						}
 
-						symbolEMA = data['Stock Ticker Symbol'];
-						valueEMA = data['EMA'];
-						EMAY_reverse = valueEMA.reverse();
+							symbolEMA = data['Stock Ticker Symbol'];
+							valueEMA = data['EMA'];
+							EMAY_reverse = valueEMA.reverse();
 
-						EMAChart = new Object();
-				EMAChart = {
-					title: {
-						text: 'Exponential Moving Average (EMA)'
+							EMAChart = new Object();
+							EMAChart = {
+								title: {
+									text: 'Exponential Moving Average (EMA)'
+								},
+								subtitle: {
+									useHTML: true,
+									text: '<a href="https://www.alphavantage.co/" target="_blank">' +
+									'Source: Alpha Vantage</a>',
+									style:{
+										color: 'blue'
+									}
+								},
+								colors:['rgb(232,153,148)'],
+								chart:{
+									zoomType:'x'
+								},
+								xAxis: {
+									categories:dataFormatEMA,
+									min: 0,
+									tickPositioner: function() {
+										"use strict";
+										let res = [];
+										for(let i = 0; i < this.categories.length; i++) {
+											if(i % 10 == 0) res.push(this.categories.length - 1 - i);
+										}
+										return res;
+									}
+								},
+								yAxis: {
+									title: {
+										text: 'EMA'
+									},
+									labels: {
+										formatter: function () {
+											return this.value;
+										}
+									}
+								},
+								series: [{
+									name: symbolEMA,
+									data:EMAY_reverse,
+									threshold:null
+								}]
+							};
+
+							var myChart = Highcharts.chart('charts', EMAChart);	
+
+							var exportUrl = 'http://export.highcharts.com/';
+							var optionsStr = JSON.stringify(EMAChart),
+							dataString = encodeURI('async=true&type=jpeg&width=400&options=' + optionsStr);
+				        		if (window.XDomainRequest) {
+						            var xdr = new XDomainRequest();
+						            xdr.open("post", exportUrl+ '?' + dataString);
+						            xdr.onload = function () {
+						                console.log(xdr.responseText);
+						                urlPic = exportUrl + xdr.responseText ;
+						                window.AndroidWebView.showInfoFromJs(urlPic);
+						            };
+						            xdr.send();
+						        } else {
+						        	$.ajax({
+						        		type: 'POST',
+						        		data: dataString,
+						        		url: exportUrl,
+						        		success: function (data) {
+						        			console.log('get the file from relative url: ', data);
+						        			urlPic = exportUrl + data;
+						        			window.AndroidWebView.showInfoFromJs(urlPic);
+
+						        		},
+						        		error: function (err) {
+						        			debugger;
+						        			console.log('error', err.statusText)
+						        		}
+						        	});
+						        }
+
+						}catch(e){
+
+						}	
+
 					},
-					subtitle: {
-						useHTML: true,
-						text: '<a href="https://www.alphavantage.co/" target="_blank">' +
-						'Source: Alpha Vantage</a>',
-						style:{
-							color: 'blue'
-						}
-					},
-					colors:['rgb(232,153,148)'],
-					chart:{
-							zoomType:'x'
-						},
-					xAxis: {
-						categories:dataFormatEMA,
-						min: 0,
-						tickPositioner: function() {
-							"use strict";
-							let res = [];
-							for(let i = 0; i < this.categories.length; i++) {
-								if(i % 10 == 0) res.push(this.categories.length - 1 - i);
-							}
-							return res;
-						}
-					},
-					yAxis: {
-						title: {
-							text: 'EMA'
-						},
-						labels: {
-							formatter: function () {
-								return this.value;
-							}
-						}
-					},
-					series: [{
-						name: symbolEMA,
-						data:EMAY_reverse,
-						threshold:null
-					}]
-				};
+					error : function(request,error)
+					{
 
-				var myChart = Highcharts.chart('charts', EMAChart);	
-
-					}catch(e){
-
-					}	
-
-				},
-				error : function(request,error)
-				{
-
-				}
-		});
+					}
+				});
 
 				
-		}
+			}
 
 		//STOCH chart
 		function showSTOCH(quote){
 
 				//STOCh
-		$.ajax({
+				$.ajax({
 
-				url : 'http://stocksearch-env.us-west-1.elasticbeanstalk.com/',
-				type : 'GET',
-				data : {
-					'STOCH': quote
-				},
-				dataType:'json',
-				success : function(data) {
+					url : 'http://stocksearch-env.us-west-1.elasticbeanstalk.com/',
+					type : 'GET',
+					data : {
+						'STOCH': quote
+					},
+					dataType:'json',
+					success : function(data) {
 
-					try{
+						try{
 
-						dataX = data['timeSeries'];
-						if (dataX) {
-							dataX.length = 125;
-							dataX_reverse = dataX.reverse();
+							dataX = data['timeSeries'];
+							if (dataX) {
+								dataX.length = 125;
+								dataX_reverse = dataX.reverse();
 
-							dataFormatSTOCH = [];
-							for (var i = 0; i < 125; i++) {
-								dataFormatSTOCH.push(dataX_reverse[i].substring(5,7)+'/'+dataX_reverse[i].substring(8,10));
+								dataFormatSTOCH = [];
+								for (var i = 0; i < 125; i++) {
+									dataFormatSTOCH.push(dataX_reverse[i].substring(5,7)+'/'+dataX_reverse[i].substring(8,10));
+								}
 							}
+
+							symbolSTOCH = data['Stock Ticker Symbol'];
+							valueSTOCHk = data['STOCH_K'];
+							valueSTOCHd = data['STOCH_D'];
+							STOCHKY_reverse = valueSTOCHk.reverse();
+							STOCHDY_reverse = valueSTOCHd.reverse();
+
+							STOCHChart = new Object();
+							STOCHChart = {
+								title: {
+									text: 'Stochastic Oscillator (STOCH)'
+								},
+								subtitle: {
+									useHTML: true,
+									text: '<a href="https://www.alphavantage.co/" target="_blank">' +
+									'Source: Alpha Vantage</a>',
+									style:{
+										color: 'blue'
+									}
+								},
+								colors:['red','blue'],
+								chart:{
+									zoomType:'x'
+								},
+								xAxis: {
+									categories:dataFormatSTOCH,
+									min: 0,
+									tickPositioner: function() {
+										"use strict";
+										let res = [];
+										for(let i = 0; i < this.categories.length; i++) {
+											if(i % 10 == 0) res.push(this.categories.length - 1 - i);
+										}
+										return res;
+									}
+								},
+								yAxis: {
+									title: {
+										text: 'STOCH'
+									},
+									labels: {
+										formatter: function () {
+											return this.value;
+										}
+									}
+								},
+								series: [{
+									name: symbolSTOCH + ' SlowK',
+									data:STOCHKY_reverse,
+									threshold:null
+								},{
+									name: symbolSTOCH + ' SlowD',
+									data:STOCHDY_reverse,
+									threshold:null
+								}]
+							};
+							var myChart = Highcharts.chart('charts', STOCHChart);
+
+							var exportUrl = 'http://export.highcharts.com/';
+							var optionsStr = JSON.stringify(STOCHChart),
+							dataString = encodeURI('async=true&type=jpeg&width=400&options=' + optionsStr);
+				        		if (window.XDomainRequest) {
+						            var xdr = new XDomainRequest();
+						            xdr.open("post", exportUrl+ '?' + dataString);
+						            xdr.onload = function () {
+						                console.log(xdr.responseText);
+						                urlPic = exportUrl + xdr.responseText ;
+						                window.AndroidWebView.showInfoFromJs(urlPic);
+						            };
+						            xdr.send();
+						        } else {
+						        	$.ajax({
+						        		type: 'POST',
+						        		data: dataString,
+						        		url: exportUrl,
+						        		success: function (data) {
+						        			console.log('get the file from relative url: ', data);
+						        			urlPic = exportUrl + data;
+						        			window.AndroidWebView.showInfoFromJs(urlPic);
+
+						        		},
+						        		error: function (err) {
+						        			debugger;
+						        			console.log('error', err.statusText)
+						        		}
+						        	});
+						        }
+
+						}catch(e){
+
 						}
 
-						symbolSTOCH = data['Stock Ticker Symbol'];
-						valueSTOCHk = data['STOCH_K'];
-						valueSTOCHd = data['STOCH_D'];
-						STOCHKY_reverse = valueSTOCHk.reverse();
-						STOCHDY_reverse = valueSTOCHd.reverse();
-
-						STOCHChart = new Object();
-				STOCHChart = {
-					title: {
-						text: 'Stochastic Oscillator (STOCH)'
 					},
-					subtitle: {
-						useHTML: true,
-						text: '<a href="https://www.alphavantage.co/" target="_blank">' +
-						'Source: Alpha Vantage</a>',
-						style:{
-							color: 'blue'
-						}
-					},
-					colors:['red','blue'],
-					chart:{
-							zoomType:'x'
-						},
-					xAxis: {
-						categories:dataFormatSTOCH,
-						min: 0,
-						tickPositioner: function() {
-							"use strict";
-							let res = [];
-							for(let i = 0; i < this.categories.length; i++) {
-								if(i % 10 == 0) res.push(this.categories.length - 1 - i);
-							}
-							return res;
-						}
-					},
-					yAxis: {
-						title: {
-							text: 'STOCH'
-						},
-						labels: {
-							formatter: function () {
-								return this.value;
-							}
-						}
-					},
-					series: [{
-						name: symbolSTOCH + ' SlowK',
-						data:STOCHKY_reverse,
-						threshold:null
-					},{
-						name: symbolSTOCH + ' SlowD',
-						data:STOCHDY_reverse,
-						threshold:null
-					}]
-				};
-				var myChart = Highcharts.chart('charts', STOCHChart);
-
-					}catch(e){
+					error : function(request,error)
+					{
 
 					}
+				});
 
-				},
-				error : function(request,error)
-				{
 
-				}
-		});
-
-					
-		}
+			}
 
 		//RSI chart
 		function showRSI(quote){
 
 				//RSI
-		$.ajax({
+				$.ajax({
 
-				url : 'http://stocksearch-env.us-west-1.elasticbeanstalk.com/',
-				type : 'GET',
-				data : {
-					'RSI': quote
-				},
-				dataType:'json',
-				success : function(data) {
+					url : 'http://stocksearch-env.us-west-1.elasticbeanstalk.com/',
+					type : 'GET',
+					data : {
+						'RSI': quote
+					},
+					dataType:'json',
+					success : function(data) {
 
-					try{
+						try{
 
-						dataX = data['timeSeries'];
-						if (dataX) {
-							dataX.length = 125;
-							dataX_reverse = dataX.reverse();
+							dataX = data['timeSeries'];
+							if (dataX) {
+								dataX.length = 125;
+								dataX_reverse = dataX.reverse();
 
-							dataFormatRSI = [];
-							for (var i = 0; i < 125; i++) {
-								dataFormatRSI.push(dataX_reverse[i].substring(5,7)+'/'+dataX_reverse[i].substring(8,10));
+								dataFormatRSI = [];
+								for (var i = 0; i < 125; i++) {
+									dataFormatRSI.push(dataX_reverse[i].substring(5,7)+'/'+dataX_reverse[i].substring(8,10));
+								}
 							}
-						}
 
-						symbolRSI = data['Stock Ticker Symbol'];
-						valueRSI = data['RSI'];
-						RSIY_reverse = valueRSI.reverse();
+							symbolRSI = data['Stock Ticker Symbol'];
+							valueRSI = data['RSI'];
+							RSIY_reverse = valueRSI.reverse();
 
-						RSIChart = new Object();
-				RSIChart = {
-					title: {
-						text: 'Relative Strength Index (RSI)'
-					},
-					subtitle: {
-						useHTML: true,
-						text: '<a href="https://www.alphavantage.co/" target="_blank">' +
-						'Source: Alpha Vantage</a>',
-						style:{
-							color: 'blue'
-						}
-					},
-					colors:['rgb(232,153,148)'],
-					chart:{
-							zoomType:'x'
-						},
-					xAxis: {
-						categories:dataFormatRSI,
-						min: 0,
-						tickPositioner: function() {
-							"use strict";
-							let res = [];
-							for(let i = 0; i < this.categories.length; i++) {
-								if(i % 10 == 0) res.push(this.categories.length - 1 - i);
+							RSIChart = new Object();
+							RSIChart = {
+								title: {
+									text: 'Relative Strength Index (RSI)'
+								},
+								subtitle: {
+									useHTML: true,
+									text: '<a href="https://www.alphavantage.co/" target="_blank">' +
+									'Source: Alpha Vantage</a>',
+									style:{
+										color: 'blue'
+									}
+								},
+								colors:['rgb(232,153,148)'],
+								chart:{
+									zoomType:'x'
+								},
+								xAxis: {
+									categories:dataFormatRSI,
+									min: 0,
+									tickPositioner: function() {
+										"use strict";
+										let res = [];
+										for(let i = 0; i < this.categories.length; i++) {
+											if(i % 10 == 0) res.push(this.categories.length - 1 - i);
+										}
+										return res;
+									}
+								},
+								yAxis: {
+									title: {
+										text: 'RSI'
+									},
+									labels: {
+										formatter: function () {
+											return this.value;
+										}
+									}
+								},
+								series: [{
+									name: symbolRSI,
+									data:RSIY_reverse,
+									threshold:null
+								}]
 							}
-							return res;
-						}
+							var myChart = Highcharts.chart('charts', RSIChart);
+
+							var exportUrl = 'http://export.highcharts.com/';
+							var optionsStr = JSON.stringify(RSIChart),
+							dataString = encodeURI('async=true&type=jpeg&width=400&options=' + optionsStr);
+				        		if (window.XDomainRequest) {
+						            var xdr = new XDomainRequest();
+						            xdr.open("post", exportUrl+ '?' + dataString);
+						            xdr.onload = function () {
+						                console.log(xdr.responseText);
+						                urlPic = exportUrl + xdr.responseText ;
+						                window.AndroidWebView.showInfoFromJs(urlPic);
+						            };
+						            xdr.send();
+						        } else {
+						        	$.ajax({
+						        		type: 'POST',
+						        		data: dataString,
+						        		url: exportUrl,
+						        		success: function (data) {
+						        			console.log('get the file from relative url: ', data);
+						        			urlPic = exportUrl + data;
+						        			window.AndroidWebView.showInfoFromJs(urlPic);
+
+						        		},
+						        		error: function (err) {
+						        			debugger;
+						        			console.log('error', err.statusText)
+						        		}
+						        	});
+						        }	
+
+						}catch(e){
+
+						}	
+
 					},
-					yAxis: {
-						title: {
-							text: 'RSI'
-						},
-						labels: {
-							formatter: function () {
-								return this.value;
-							}
-						}
-					},
-					series: [{
-						name: symbolRSI,
-						data:RSIY_reverse,
-						threshold:null
-					}]
-				}
-				var myChart = Highcharts.chart('charts', RSIChart);	
+					error : function(request,error)
+					{
 
-					}catch(e){
-
-					}	
-
-				},
-				error : function(request,error)
-				{
-
-				}
-		});
+					}
+				});
 
 				
-		}
+			}
 
 		//ADX chart
 		function showADX(quote){
 
 				//ADX
-		$.ajax({
+				$.ajax({
 
-				url : 'http://stocksearch-env.us-west-1.elasticbeanstalk.com/',
-				type : 'GET',
-				data : {
-					'ADX': quote
-				},
-				dataType:'json',
-				success : function(data) {
+					url : 'http://stocksearch-env.us-west-1.elasticbeanstalk.com/',
+					type : 'GET',
+					data : {
+						'ADX': quote
+					},
+					dataType:'json',
+					success : function(data) {
 
-					try{
+						try{
 
-						dataX = data['timeSeries'];
-						if (dataX) {
-							dataX.length = 125;
-							dataX_reverse = dataX.reverse();
+							dataX = data['timeSeries'];
+							if (dataX) {
+								dataX.length = 125;
+								dataX_reverse = dataX.reverse();
 
-							dataFormatADX = [];
-							for (var i = 0; i < 125; i++) {
-								dataFormatADX.push(dataX_reverse[i].substring(5,7)+'/'+dataX_reverse[i].substring(8,10));
+								dataFormatADX = [];
+								for (var i = 0; i < 125; i++) {
+									dataFormatADX.push(dataX_reverse[i].substring(5,7)+'/'+dataX_reverse[i].substring(8,10));
+								}
 							}
-						}
 
-						symbolADX = data['Stock Ticker Symbol'];
-						valueADX = data['ADX'];
-						ADXY_reverse = valueADX.reverse();
+							symbolADX = data['Stock Ticker Symbol'];
+							valueADX = data['ADX'];
+							ADXY_reverse = valueADX.reverse();
 
-						ADXChart = new Object();
-				ADXChart = {
-					title: {
-						text: 'Average Directional Index (ADX)'
-					},
-					subtitle: {
-						useHTML: true,
-						text: '<a href="https://www.alphavantage.co/" target="_blank">' +
-						'Source: Alpha Vantage</a>',
-						style:{
-							color: 'blue'
-						}
-					},
-					colors:['rgb(232,153,148)'],
-					chart:{
-							zoomType:'x'
-						},
-					xAxis: {
-						categories:dataFormatADX,
-						min: 0,
-						tickPositioner: function() {
-							"use strict";
-							let res = [];
-							for(let i = 0; i < this.categories.length; i++) {
-								if(i % 10 == 0) res.push(this.categories.length - 1 - i);
+							ADXChart = new Object();
+							ADXChart = {
+								title: {
+									text: 'Average Directional Index (ADX)'
+								},
+								subtitle: {
+									useHTML: true,
+									text: '<a href="https://www.alphavantage.co/" target="_blank">' +
+									'Source: Alpha Vantage</a>',
+									style:{
+										color: 'blue'
+									}
+								},
+								colors:['rgb(232,153,148)'],
+								chart:{
+									zoomType:'x'
+								},
+								xAxis: {
+									categories:dataFormatADX,
+									min: 0,
+									tickPositioner: function() {
+										"use strict";
+										let res = [];
+										for(let i = 0; i < this.categories.length; i++) {
+											if(i % 10 == 0) res.push(this.categories.length - 1 - i);
+										}
+										return res;
+									}
+								},
+								yAxis: {
+									title: {
+										text: 'ADX'
+									},
+									labels: {
+										formatter: function () {
+											return this.value;
+										}
+									}
+								},
+								series: [{
+									name: symbolADX,
+									data:ADXY_reverse,
+									threshold:null
+								}]
 							}
-							return res;
-						}
+							var myChart = Highcharts.chart('charts', ADXChart);	
+
+							var exportUrl = 'http://export.highcharts.com/';
+							var optionsStr = JSON.stringify(ADXChart),
+							dataString = encodeURI('async=true&type=jpeg&width=400&options=' + optionsStr);
+				        		if (window.XDomainRequest) {
+						            var xdr = new XDomainRequest();
+						            xdr.open("post", exportUrl+ '?' + dataString);
+						            xdr.onload = function () {
+						                console.log(xdr.responseText);
+						                urlPic = exportUrl + xdr.responseText ;
+						                window.AndroidWebView.showInfoFromJs(urlPic);
+						            };
+						            xdr.send();
+						        } else {
+						        	$.ajax({
+						        		type: 'POST',
+						        		data: dataString,
+						        		url: exportUrl,
+						        		success: function (data) {
+						        			console.log('get the file from relative url: ', data);
+						        			urlPic = exportUrl + data;
+						        			window.AndroidWebView.showInfoFromJs(urlPic);
+
+						        		},
+						        		error: function (err) {
+						        			debugger;
+						        			console.log('error', err.statusText)
+						        		}
+						        	});
+						        }
+
+						}catch(e){
+
+						}				
+
 					},
-					yAxis: {
-						title: {
-							text: 'ADX'
-						},
-						labels: {
-							formatter: function () {
-								return this.value;
-							}
-						}
-					},
-					series: [{
-						name: symbolADX,
-						data:ADXY_reverse,
-						threshold:null
-					}]
-				}
-				var myChart = Highcharts.chart('charts', ADXChart);	
+					error : function(request,error)
+					{
 
-					}catch(e){
-
-					}				
-
-				},
-				error : function(request,error)
-				{
-
-				}
-		});
+					}
+				});
 
 				
-		}
+			}
 
 		//CCI chart
 		function showCCI(quote){
 
 				//CCI
-		$.ajax({
+				$.ajax({
 
-				url : 'http://stocksearch-env.us-west-1.elasticbeanstalk.com/',
-				type : 'GET',
-				data : {
-					'CCI': quote
-				},
-				dataType:'json',
-				success : function(data) {
+					url : 'http://stocksearch-env.us-west-1.elasticbeanstalk.com/',
+					type : 'GET',
+					data : {
+						'CCI': quote
+					},
+					dataType:'json',
+					success : function(data) {
 
-					try{
+						try{
 
-						dataX = data['timeSeries'];
-						if (dataX) {
-							dataX.length = 125;
-							dataX_reverse = dataX.reverse();
+							dataX = data['timeSeries'];
+							if (dataX) {
+								dataX.length = 125;
+								dataX_reverse = dataX.reverse();
 
-							dataFormatCCI = [];
-							for (var i = 0; i < 125; i++) {
-								dataFormatCCI.push(dataX_reverse[i].substring(5,7)+'/'+dataX_reverse[i].substring(8,10));
+								dataFormatCCI = [];
+								for (var i = 0; i < 125; i++) {
+									dataFormatCCI.push(dataX_reverse[i].substring(5,7)+'/'+dataX_reverse[i].substring(8,10));
+								}
 							}
-						}
 
-						symbolCCI = data['Stock Ticker Symbol'];
-						valueCCI = data['CCI'];
-						CCIY_reverse = valueCCI.reverse();
+							symbolCCI = data['Stock Ticker Symbol'];
+							valueCCI = data['CCI'];
+							CCIY_reverse = valueCCI.reverse();
 
-						CCIChart = new Object();
-				CCIChart = {
-					title: {
-						text: 'Commodity Channel Index (CCI)'
+							CCIChart = new Object();
+							CCIChart = {
+								title: {
+									text: 'Commodity Channel Index (CCI)'
+								},
+								subtitle: {
+									useHTML: true,
+									text: '<a href="https://www.alphavantage.co/" target="_blank">' +
+									'Source: Alpha Vantage</a>',
+									style:{
+										color: 'blue'
+									}
+								},
+								colors:['rgb(232,153,148)'],
+								chart:{
+									zoomType:'x'
+								},
+								xAxis: {
+									categories:dataFormatCCI,
+
+									tickPositioner: function() {
+										"use strict";
+										let res = [];
+										for(let i = 0; i < this.categories.length; i++) {
+											if(i % 10 == 0) res.push(this.categories.length - 1 - i);
+										}
+										return res;
+									}
+								},
+								yAxis: {
+									title: {
+										text: 'CCI'
+									},
+									labels: {
+										formatter: function () {
+											return this.value;
+										}
+									}
+								},
+								series: [{
+									name: symbolCCI,
+									data:CCIY_reverse,
+									threshold:null
+								}]
+							};
+							var myChart = Highcharts.chart('charts', CCIChart);	
+
+							var exportUrl = 'http://export.highcharts.com/';
+							var optionsStr = JSON.stringify(CCIChart),
+							dataString = encodeURI('async=true&type=jpeg&width=400&options=' + optionsStr);
+				        		if (window.XDomainRequest) {
+						            var xdr = new XDomainRequest();
+						            xdr.open("post", exportUrl+ '?' + dataString);
+						            xdr.onload = function () {
+						                console.log(xdr.responseText);
+						                urlPic = exportUrl + xdr.responseText ;
+						                window.AndroidWebView.showInfoFromJs(urlPic);
+						            };
+						            xdr.send();
+						        } else {
+						        	$.ajax({
+						        		type: 'POST',
+						        		data: dataString,
+						        		url: exportUrl,
+						        		success: function (data) {
+						        			console.log('get the file from relative url: ', data);
+						        			urlPic = exportUrl + data;
+						        			window.AndroidWebView.showInfoFromJs(urlPic);
+
+						        		},
+						        		error: function (err) {
+						        			debugger;
+						        			console.log('error', err.statusText)
+						        		}
+						        	});
+						        }
+
+						}catch(e){
+
+						}			
+
 					},
-					subtitle: {
-						useHTML: true,
-						text: '<a href="https://www.alphavantage.co/" target="_blank">' +
-						'Source: Alpha Vantage</a>',
-						style:{
-							color: 'blue'
-						}
-					},
-					colors:['rgb(232,153,148)'],
-					chart:{
-							zoomType:'x'
-						},
-					xAxis: {
-						categories:dataFormatCCI,
+					error : function(request,error)
+					{
 
-						tickPositioner: function() {
-							"use strict";
-							let res = [];
-							for(let i = 0; i < this.categories.length; i++) {
-								if(i % 10 == 0) res.push(this.categories.length - 1 - i);
-							}
-							return res;
-						}
-					},
-					yAxis: {
-						title: {
-							text: 'CCI'
-						},
-						labels: {
-							formatter: function () {
-								return this.value;
-							}
-						}
-					},
-					series: [{
-						name: symbolCCI,
-						data:CCIY_reverse,
-						threshold:null
-					}]
-				};
-				var myChart = Highcharts.chart('charts', CCIChart);	
-
-					}catch(e){
-
-					}			
-
-				},
-				error : function(request,error)
-				{
-
-				}
-		});
+					}
+				});
 
 				
-		}
+			}
 
 		//BBANDS chart
 		function showBBANDS(quote){
 
 			//BBANDS
-		$.ajax({
+			$.ajax({
 
 				url : 'http://stocksearch-env.us-west-1.elasticbeanstalk.com/',
 				type : 'GET',
@@ -740,59 +953,89 @@
 						BBANDSLY_reverse = valueBBANDSl.reverse();
 
 						BBANDSChart = new Object();
-				BBANDSChart = {
-					title: {
-						text: 'Bollinger Bands (BBANDS)'
-					},
-					subtitle: {
-						useHTML: true,
-						text: '<a href="https://www.alphavantage.co/" target="_blank">' +
-						'Source: Alpha Vantage</a>',
-						style:{
-							color: 'blue'
-						}
-					},
-					colors:['red','black','green'],
-					chart:{
-							zoomType:'x'
-						},
-					xAxis: {
-						categories:dataFormatBBANDS,
+						BBANDSChart = {
+							title: {
+								text: 'Bollinger Bands (BBANDS)'
+							},
+							subtitle: {
+								useHTML: true,
+								text: '<a href="https://www.alphavantage.co/" target="_blank">' +
+								'Source: Alpha Vantage</a>',
+								style:{
+									color: 'blue'
+								}
+							},
+							colors:['red','black','green'],
+							chart:{
+								zoomType:'x'
+							},
+							xAxis: {
+								categories:dataFormatBBANDS,
 
-						tickPositioner: function() {
-							"use strict";
-							let res = [];
-							for(let i = 0; i < this.categories.length; i++) {
-								if(i % 10 == 0) res.push(this.categories.length - 1 - i);
-							}
-							return res;
-						}
-					},
-					yAxis: {
-						title: {
-							text: 'BBANDS'
-						},
-						labels: {
-							formatter: function () {
-								return this.value;
-							}
-						}
-					},
-					series: [{
-						name: symbolBBANDS + ' Real Middle Band',
-						data:BBANDSMY_reverse,
-						threshold:null
-					},{
-						name: symbolBBANDS + ' Real Upper Band',
-						data:BBANDSUY_reverse,
-						threshold:null
-					},{
-						name: symbolBBANDS + ' Real Lower Band',
-						data:BBANDSLY_reverse,
-						threshold:null
-					}]
-				};
-				var myChart = Highcharts.chart('charts', BBANDSChart);
+								tickPositioner: function() {
+									"use strict";
+									let res = [];
+									for(let i = 0; i < this.categories.length; i++) {
+										if(i % 10 == 0) res.push(this.categories.length - 1 - i);
+									}
+									return res;
+								}
+							},
+							yAxis: {
+								title: {
+									text: 'BBANDS'
+								},
+								labels: {
+									formatter: function () {
+										return this.value;
+									}
+								}
+							},
+							series: [{
+								name: symbolBBANDS + ' Real Middle Band',
+								data:BBANDSMY_reverse,
+								threshold:null
+							},{
+								name: symbolBBANDS + ' Real Upper Band',
+								data:BBANDSUY_reverse,
+								threshold:null
+							},{
+								name: symbolBBANDS + ' Real Lower Band',
+								data:BBANDSLY_reverse,
+								threshold:null
+							}]
+						};
+						var myChart = Highcharts.chart('charts', BBANDSChart);
+
+						var exportUrl = 'http://export.highcharts.com/';
+							var optionsStr = JSON.stringify(BBANDSChart),
+							dataString = encodeURI('async=true&type=jpeg&width=400&options=' + optionsStr);
+				        		if (window.XDomainRequest) {
+						            var xdr = new XDomainRequest();
+						            xdr.open("post", exportUrl+ '?' + dataString);
+						            xdr.onload = function () {
+						                console.log(xdr.responseText);
+						                urlPic = exportUrl + xdr.responseText ;
+						                window.AndroidWebView.showInfoFromJs(urlPic);
+						            };
+						            xdr.send();
+						        } else {
+						        	$.ajax({
+						        		type: 'POST',
+						        		data: dataString,
+						        		url: exportUrl,
+						        		success: function (data) {
+						        			console.log('get the file from relative url: ', data);
+						        			urlPic = exportUrl + data;
+						        			window.AndroidWebView.showInfoFromJs(urlPic);
+
+						        		},
+						        		error: function (err) {
+						        			debugger;
+						        			console.log('error', err.statusText)
+						        		}
+						        	});
+						        }
 
 					}catch(e){
 
@@ -803,16 +1046,16 @@
 				{
 
 				}
-		});
+			});
 
-							
+
 		}
 
 		//MACD chart
 		function showMACD(quote){
 
 			//Macd
-		$.ajax({
+			$.ajax({
 
 				url : 'http://stocksearch-env.us-west-1.elasticbeanstalk.com/',
 				type : 'GET',
@@ -844,59 +1087,89 @@
 						MACDSY_reverse = valueMACDs.reverse();
 
 						MACDChart = new Object();
-				MACDChart = {
-					title: {
-						text: 'Moving Average Convergence/Divergence (MACD)'
-					},
-					subtitle: {
-						useHTML: true,
-						text: '<a href="https://www.alphavantage.co/" target="_blank">' +
-						'Source: Alpha Vantage</a>',
-						style:{
-							color: 'blue'
-						}
-					},
-					colors:['red','orange','purple'],
-					chart:{
-							zoomType:'x'
-						},
-					xAxis: {
-						categories:dataFormatMACD,
+						MACDChart = {
+							title: {
+								text: 'Moving Average Convergence/Divergence (MACD)'
+							},
+							subtitle: {
+								useHTML: true,
+								text: '<a href="https://www.alphavantage.co/" target="_blank">' +
+								'Source: Alpha Vantage</a>',
+								style:{
+									color: 'blue'
+								}
+							},
+							colors:['red','orange','purple'],
+							chart:{
+								zoomType:'x'
+							},
+							xAxis: {
+								categories:dataFormatMACD,
 
-						tickPositioner: function() {
-							"use strict";
-							let res = [];
-							for(let i = 0; i < this.categories.length; i++) {
-								if(i % 10 == 0) res.push(this.categories.length - 1 - i);
-							}
-							return res;
-						}
-					},
-					yAxis: {
-						title: {
-							text: 'MACD'
-						},
-						labels: {
-							formatter: function () {
-								return this.value;
-							}
-						}
-					},
-					series: [{
-						name: symbolMACD + ' MACD',
-						data:MACDY_reverse,
-						threshold:null
-					},{
-						name: symbolMACD + ' MACD_Hist',
-						data:MACDHY_reverse,
-						threshold:null
-					},{
-						name: symbolMACD + ' MACD_Signal',
-						data:MACDSY_reverse,
-						threshold:null
-					}]
-				};
-				var myChart = Highcharts.chart('charts', MACDChart);
+								tickPositioner: function() {
+									"use strict";
+									let res = [];
+									for(let i = 0; i < this.categories.length; i++) {
+										if(i % 10 == 0) res.push(this.categories.length - 1 - i);
+									}
+									return res;
+								}
+							},
+							yAxis: {
+								title: {
+									text: 'MACD'
+								},
+								labels: {
+									formatter: function () {
+										return this.value;
+									}
+								}
+							},
+							series: [{
+								name: symbolMACD + ' MACD',
+								data:MACDY_reverse,
+								threshold:null
+							},{
+								name: symbolMACD + ' MACD_Hist',
+								data:MACDHY_reverse,
+								threshold:null
+							},{
+								name: symbolMACD + ' MACD_Signal',
+								data:MACDSY_reverse,
+								threshold:null
+							}]
+						};
+						var myChart = Highcharts.chart('charts', MACDChart);
+
+						var exportUrl = 'http://export.highcharts.com/';
+							var optionsStr = JSON.stringify(MACDChart),
+							dataString = encodeURI('async=true&type=jpeg&width=400&options=' + optionsStr);
+				        		if (window.XDomainRequest) {
+						            var xdr = new XDomainRequest();
+						            xdr.open("post", exportUrl+ '?' + dataString);
+						            xdr.onload = function () {
+						                console.log(xdr.responseText);
+						                urlPic = exportUrl + xdr.responseText ;
+						                window.AndroidWebView.showInfoFromJs(urlPic);
+						            };
+						            xdr.send();
+						        } else {
+						        	$.ajax({
+						        		type: 'POST',
+						        		data: dataString,
+						        		url: exportUrl,
+						        		success: function (data) {
+						        			console.log('get the file from relative url: ', data);
+						        			urlPic = exportUrl + data;
+						        			window.AndroidWebView.showInfoFromJs(urlPic);
+
+						        		},
+						        		error: function (err) {
+						        			debugger;
+						        			console.log('error', err.statusText)
+						        		}
+						        	});
+						        }
 
 					}catch(e){
 
@@ -909,13 +1182,13 @@
 				{
 
 				}
-		});
+			});
 
 
-				
+
 		}
 
 
-</script>
+	</script>
 </body>
 </html>
