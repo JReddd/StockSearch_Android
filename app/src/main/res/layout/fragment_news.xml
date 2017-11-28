@@ -29,6 +29,17 @@
             android:layout_centerHorizontal="true"
             android:indeterminateTint="@android:color/black"/>
 
+        <TextView
+            android:id="@+id/newsFiledTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="250dp"
+            android:textColor="@android:color/black"
+            android:text="Failed to load news data."
+            android:textSize="22sp"
+            android:visibility="gone"/>
+
     </RelativeLayout>
 
 </FrameLayout>

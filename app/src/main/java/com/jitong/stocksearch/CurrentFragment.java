@@ -98,6 +98,7 @@ public class CurrentFragment extends Fragment {
 
             final ProgressBar progressBar = rootView.findViewById(R.id.stockDetailsProgressBar);
             final Button button = rootView.findViewById(R.id.indicatorButton);
+            final TextView dataFiledTextView = rootView.findViewById(R.id.dataFiledTextView);
 
             final ImageView emptyStarImageView = rootView.findViewById(R.id.emptyStarImageView);
             final ImageView filledStarImageView = rootView.findViewById(R.id.filledStarImageView);
@@ -118,11 +119,7 @@ public class CurrentFragment extends Fragment {
                         public void onResponse(JSONObject response) {
                             try {
 
-                                tableDone = true;
                                 progressBar.setVisibility(View.GONE);
-                                emptyStarImageView.setEnabled(true);
-                                filledStarImageView.setEnabled(true);
-
 
                                 String symbolTable = response.getString("Stock Ticker Symbol");
                                 String priceTable = response.getString("Last Price");
@@ -134,28 +131,40 @@ public class CurrentFragment extends Fragment {
                                 String volumeTable = response.getString("Volume");
                                 String changePercentTable = response.getString("Change Percent");
                                 String change = changeTable + " (" + changePercentTable + ") ";
-                                stockTable.add(symbolTable);
-                                stockTable.add(priceTable);
-                                stockTable.add(change);
-                                stockTable.add(timeStampTable);
-                                stockTable.add(openTable);
-                                stockTable.add(closeTable);
-                                stockTable.add(rangeTable);
-                                stockTable.add(volumeTable);
 
-                                sharedPreJson = "{'symbol':'" + symbolTable + "','price':'" + priceTable + "','change':'" + change + "'}";
+                                if (symbolTable.equals("null")) {
 
-                                ListView stockDetails = rootView.findViewById(R.id.stockDetailsListView);
-                                stockDetails.setVisibility(View.VISIBLE);
-                                ListVIewAdapter arrayAdapter;
+                                    dataFiledTextView.setVisibility(View.VISIBLE);
 
-                                if (Objects.equals(changeTable.substring(0, 1), "-")) {
-                                    arrayAdapter = new ListVIewAdapter(getActivity(), keyTable, stockTable, downId);
                                 } else {
-                                    arrayAdapter = new ListVIewAdapter(getActivity(), keyTable, stockTable, upId);
-                                }
 
-                                stockDetails.setAdapter(arrayAdapter);
+                                    emptyStarImageView.setEnabled(true);
+                                    filledStarImageView.setEnabled(true);
+                                    tableDone = true;
+
+                                    stockTable.add(symbolTable);
+                                    stockTable.add(priceTable);
+                                    stockTable.add(change);
+                                    stockTable.add(timeStampTable);
+                                    stockTable.add(openTable);
+                                    stockTable.add(closeTable);
+                                    stockTable.add(rangeTable);
+                                    stockTable.add(volumeTable);
+
+                                    sharedPreJson = "{'symbol':'" + symbolTable + "','price':'" + priceTable + "','change':'" + change + "'}";
+
+                                    ListView stockDetails = rootView.findViewById(R.id.stockDetailsListView);
+                                    stockDetails.setVisibility(View.VISIBLE);
+                                    ListVIewAdapter arrayAdapter;
+
+                                    if (Objects.equals(changeTable.substring(0, 1), "-")) {
+                                        arrayAdapter = new ListVIewAdapter(getActivity(), keyTable, stockTable, downId);
+                                    } else {
+                                        arrayAdapter = new ListVIewAdapter(getActivity(), keyTable, stockTable, upId);
+                                    }
+
+                                    stockDetails.setAdapter(arrayAdapter);
+                                }
 
                             } catch (Exception ex) {
                                 ex.printStackTrace();
@@ -166,6 +175,7 @@ public class CurrentFragment extends Fragment {
                         @Override
                         public void onErrorResponse(VolleyError error) {
                             progressBar.setVisibility(View.GONE);
+                            dataFiledTextView.setVisibility(View.VISIBLE);
                             // TODO Auto-generated method stub
                             Log.i("error", String.valueOf(error));
 

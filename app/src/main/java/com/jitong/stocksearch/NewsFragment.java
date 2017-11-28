@@ -13,6 +13,7 @@ import android.support.v4.app.Fragment;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.DefaultRetryPolicy;
@@ -52,6 +53,8 @@ public class NewsFragment extends Fragment {
 
             rootView = inflater.inflate(R.layout.fragment_news, container, false);
 
+            final TextView newsFiledTextView = rootView.findViewById(R.id.newsFiledTextView);
+
             final ArrayList<String> newsTitle = new ArrayList<>();
             final ArrayList<String> newsAuthor = new ArrayList<>();
             final ArrayList<String> newsDate = new ArrayList<>();
@@ -79,24 +82,29 @@ public class NewsFragment extends Fragment {
 
                             try {
                                 progressBar.setVisibility(View.GONE);
-                                ListView newsListView = rootView.findViewById(R.id.newsListView);
-                                newsListView.setVisibility(View.VISIBLE);
 
                                 JSONArray newsTitleArray = response.getJSONArray("title");
                                 JSONArray newsAuthorArray = response.getJSONArray("author");
                                 JSONArray newsDateArray = response.getJSONArray("date");
                                 JSONArray newsLinkArray = response.getJSONArray("link");
 
-                                for (int i = 0; i < 5; i++) {
-                                    String author = newsAuthorArray.getString(i);
-                                    JSONObject objAuthor = new JSONObject(author);
-                                    String author_inJSON = objAuthor.getString("0");
+                                Log.e("news",newsTitleArray.toString());
 
-                                    newsTitle.add(newsTitleArray.getString(i));
-                                    newsAuthor.add("Author: " + author_inJSON);
-                                    newsDate.add("Date: " + newsDateArray.getString(i));
-                                    newsLink.add(newsLinkArray.getString(i));
-                                }
+                                if(newsTitleArray.length() > 0){
+
+                                    ListView newsListView = rootView.findViewById(R.id.newsListView);
+                                    newsListView.setVisibility(View.VISIBLE);
+
+                                    for (int i = 0; i < 5; i++) {
+                                        String author = newsAuthorArray.getString(i);
+                                        JSONObject objAuthor = new JSONObject(author);
+                                        String author_inJSON = objAuthor.getString("0");
+
+                                        newsTitle.add(newsTitleArray.getString(i));
+                                        newsAuthor.add("Author: " + author_inJSON);
+                                        newsDate.add("Date: " + newsDateArray.getString(i));
+                                        newsLink.add(newsLinkArray.getString(i));
+                                    }
 
                                     NewsAdapter arrayAdapter = new NewsAdapter(getActivity(),newsTitle, newsAuthor, newsDate);;
                                     newsListView.setAdapter(arrayAdapter);
@@ -121,7 +129,11 @@ public class NewsFragment extends Fragment {
                                         }
                                     });
 
+                                } else {
 
+                                    newsFiledTextView.setVisibility(View.VISIBLE);
+
+                                }
 
                             }catch (Exception ex) {
                                 ex.printStackTrace();
@@ -133,6 +145,8 @@ public class NewsFragment extends Fragment {
                         public void onErrorResponse(VolleyError error) {
                             // TODO Auto-generated method stub
                             Log.i("error", String.valueOf(error));
+                            newsFiledTextView.setVisibility(View.VISIBLE);
+                            progressBar.setVisibility(View.GONE);
 
                         }
                     });
