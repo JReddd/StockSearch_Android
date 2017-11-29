@@ -99,8 +99,9 @@ public class MainActivity extends AppCompatActivity {
                 double price = Double.parseDouble(obj.getString("price"));
                 double change = Double.parseDouble(obj.getString("change"));
                 double changePercent = Double.parseDouble(obj.getString("changePercent").replace("%",""));
+                long addedTime = Long.parseLong(obj.getString("addedTime"));
 
-                StockInFavArrayList.add(new StockInFav(symbol,price,change,changePercent));
+                StockInFavArrayList.add(new StockInFav(symbol,price,change,changePercent,addedTime));
 
 
             } catch (JSONException e) {
@@ -108,6 +109,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
         }
+        Collections.sort(StockInFavArrayList,StockInFav.DefaultComparator);
         FavoriteAdapter arrayAdapter = new FavoriteAdapter(this, StockInFavArrayList);
         favoriteListView.setAdapter(arrayAdapter);
 
@@ -175,9 +177,12 @@ public class MainActivity extends AppCompatActivity {
 
                 switch (spinnerList.get(position)) {
                     case "Default":
-                        sortBy = "Sort By";
+                        sortBy = "Default";
                         positionInSortSpinner = 1;
                         orderSpinner.setEnabled(false);
+                        Collections.sort(StockInFavArrayList,StockInFav.DefaultComparator);
+                        FavoriteAdapter arrayAdapterDefault = new FavoriteAdapter(MainActivity.this, StockInFavArrayList);
+                        favoriteListView.setAdapter(arrayAdapterDefault);
                         break;
                     case "Symbol" :
                         sortBy = "Symbol";
@@ -199,12 +204,12 @@ public class MainActivity extends AppCompatActivity {
                         orderSpinner.setEnabled(true);
                         if (ascending){
                             Collections.sort(StockInFavArrayList,StockInFav.PriceComparator);
-                            FavoriteAdapter arrayAdapterSymbol = new FavoriteAdapter(MainActivity.this, StockInFavArrayList);
-                            favoriteListView.setAdapter(arrayAdapterSymbol);
+                            FavoriteAdapter arrayAdapterPrice = new FavoriteAdapter(MainActivity.this, StockInFavArrayList);
+                            favoriteListView.setAdapter(arrayAdapterPrice);
                         } else {
                             Collections.sort(StockInFavArrayList,StockInFav.PriceComparatorNeg);
-                            FavoriteAdapter arrayAdapterSymbol = new FavoriteAdapter(MainActivity.this, StockInFavArrayList);
-                            favoriteListView.setAdapter(arrayAdapterSymbol);
+                            FavoriteAdapter arrayAdapterPrice = new FavoriteAdapter(MainActivity.this, StockInFavArrayList);
+                            favoriteListView.setAdapter(arrayAdapterPrice);
                         }
                         break;
                     case "Change":
@@ -213,12 +218,12 @@ public class MainActivity extends AppCompatActivity {
                         orderSpinner.setEnabled(true);
                         if (ascending){
                             Collections.sort(StockInFavArrayList,StockInFav.ChangeComparator);
-                            FavoriteAdapter arrayAdapterSymbol = new FavoriteAdapter(MainActivity.this, StockInFavArrayList);
-                            favoriteListView.setAdapter(arrayAdapterSymbol);
+                            FavoriteAdapter arrayAdapterChange = new FavoriteAdapter(MainActivity.this, StockInFavArrayList);
+                            favoriteListView.setAdapter(arrayAdapterChange);
                         } else {
                             Collections.sort(StockInFavArrayList,StockInFav.ChangeComparatorNeg);
-                            FavoriteAdapter arrayAdapterSymbol = new FavoriteAdapter(MainActivity.this, StockInFavArrayList);
-                            favoriteListView.setAdapter(arrayAdapterSymbol);
+                            FavoriteAdapter arrayAdapterChange = new FavoriteAdapter(MainActivity.this, StockInFavArrayList);
+                            favoriteListView.setAdapter(arrayAdapterChange);
                         }
                         break;
                     case "Change Percent":
@@ -227,12 +232,12 @@ public class MainActivity extends AppCompatActivity {
                         orderSpinner.setEnabled(true);
                         if (ascending){
                             Collections.sort(StockInFavArrayList,StockInFav.ChangePercentComparator);
-                            FavoriteAdapter arrayAdapterSymbol = new FavoriteAdapter(MainActivity.this, StockInFavArrayList);
-                            favoriteListView.setAdapter(arrayAdapterSymbol);
+                            FavoriteAdapter arrayAdapterChangePercent = new FavoriteAdapter(MainActivity.this, StockInFavArrayList);
+                            favoriteListView.setAdapter(arrayAdapterChangePercent);
                         } else {
                             Collections.sort(StockInFavArrayList,StockInFav.ChangePercentComparatorNeg);
-                            FavoriteAdapter arrayAdapterSymbol = new FavoriteAdapter(MainActivity.this, StockInFavArrayList);
-                            favoriteListView.setAdapter(arrayAdapterSymbol);
+                            FavoriteAdapter arrayAdapterChangePercent = new FavoriteAdapter(MainActivity.this, StockInFavArrayList);
+                            favoriteListView.setAdapter(arrayAdapterChangePercent);
                         }
                         break;
                     default:break;

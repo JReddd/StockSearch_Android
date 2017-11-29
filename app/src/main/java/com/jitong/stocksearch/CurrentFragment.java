@@ -52,7 +52,6 @@ public class CurrentFragment extends Fragment {
     private View rootView;
     private String selectedChart;
     private String selectedChartInSpinner;
-    private boolean tableDone;
     private boolean inFavList = false;
     private String sharedPreJson;
     private String urlPic;
@@ -75,7 +74,6 @@ public class CurrentFragment extends Fragment {
                              Bundle savedInstanceState) {
         if (rootView == null) {
 
-            tableDone = false;
             String symbol = getActivity().getIntent().getStringExtra("symbol");
             final String realSymbol;
 
@@ -145,7 +143,6 @@ public class CurrentFragment extends Fragment {
 
                                     emptyStarImageView.setEnabled(true);
                                     filledStarImageView.setEnabled(true);
-                                    tableDone = true;
 
                                     stockTable.add(symbolTable);
                                     stockTable.add(priceTable);
@@ -156,7 +153,10 @@ public class CurrentFragment extends Fragment {
                                     stockTable.add(rangeTable);
                                     stockTable.add(volumeTable);
 
-                                    sharedPreJson = "{'symbol':'" + symbolTable + "','price':'" + priceTable + "','change':'" + changeTable + "','changePercent':'" + changePercentTable + "'}";
+                                    long addedTime = System.currentTimeMillis();
+
+                                    sharedPreJson = "{'symbol':'" + symbolTable + "','price':'" + priceTable + "','change':'" + changeTable +
+                                            "','changePercent':'" + changePercentTable + "','addedTime':'" + addedTime + "'}";
 
                                     ListView stockDetails = rootView.findViewById(R.id.stockDetailsListView);
                                     stockDetails.setVisibility(View.VISIBLE);
@@ -188,7 +188,7 @@ public class CurrentFragment extends Fragment {
                     });
 
             jsObjRequest.setRetryPolicy(new DefaultRetryPolicy(
-                    3000,
+                    4000,
                     DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
                     DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
 

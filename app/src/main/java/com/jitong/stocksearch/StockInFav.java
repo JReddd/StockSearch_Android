@@ -12,34 +12,19 @@ public class StockInFav implements Comparable<StockInFav> {
     private double price;
     private double change;
     private double changePercent;
+    private long addedTime;
 
-    public StockInFav(String symbol, double price, double change, double changePercent) {
+    public StockInFav(String symbol, double price, double change, double changePercent, long addedTime) {
         super();
         this.symbol = symbol;
         this.price = price;
         this.change = change;
         this.changePercent = changePercent;
-    }
-
-    public void setSymbol(String symbol) {
-        this.symbol = symbol;
-    }
-
-    public void setPrice(double price) {
-        this.price = price;
-    }
-
-    public void setChange(double change) {
-        this.change = change;
-    }
-
-    public void setChangePercent(double changePercent) {
-        this.changePercent = changePercent;
+        this.addedTime = addedTime;
     }
 
     public String getSymbol() {
         return symbol;
-
     }
 
     public double getPrice() {
@@ -54,10 +39,26 @@ public class StockInFav implements Comparable<StockInFav> {
         return changePercent;
     }
 
+    public long getAddedTime() {
+        return addedTime;
+    }
+
     @Override
     public int compareTo(StockInFav o) {
         return 0;
     }
+
+    public static Comparator<StockInFav> DefaultComparator = new Comparator<StockInFav>() {
+        @Override
+        public int compare(StockInFav o1, StockInFav o2) {
+            long addedTime1 = o1.getAddedTime();
+            long addedTime2 = o2.getAddedTime();
+
+            if (addedTime1 < addedTime2) return -1;
+            if (addedTime1 > addedTime2) return 1;
+            return 0;
+        }
+    };
 
     public static Comparator<StockInFav> SymbolComparator = new Comparator<StockInFav>() {
         @Override
@@ -68,8 +69,6 @@ public class StockInFav implements Comparable<StockInFav> {
             //ascending order
             return symbol1.compareTo(symbol2);
 
-            //descending order
-            //return symbol2.compareTo(symbol1);
         }
     };
 
@@ -78,9 +77,6 @@ public class StockInFav implements Comparable<StockInFav> {
         public int compare(StockInFav o1, StockInFav o2) {
             String symbol1 = o1.getSymbol().toUpperCase();
             String symbol2 = o2.getSymbol().toUpperCase();
-
-            //ascending order
-            //return symbol1.compareTo(symbol2);
 
             //descending order
             return symbol2.compareTo(symbol1);
@@ -98,8 +94,6 @@ public class StockInFav implements Comparable<StockInFav> {
             if (price1 > price2) return 1;
             return 0;
 
-            //descending order
-
         }
     };
 
@@ -113,8 +107,6 @@ public class StockInFav implements Comparable<StockInFav> {
             if (price1 < price2) return 1;
             if (price1 > price2) return -1;
             return 0;
-
-
 
         }
     };
@@ -130,8 +122,6 @@ public class StockInFav implements Comparable<StockInFav> {
             if (price1 > price2) return 1;
             return 0;
 
-            //descending order
-
         }
     };
 
@@ -141,12 +131,10 @@ public class StockInFav implements Comparable<StockInFav> {
             double price1 = o1.getChange();
             double price2 = o2.getChange();
 
-            //ascending order
+            //descending order
             if (price1 < price2) return 1;
             if (price1 > price2) return -1;
             return 0;
-
-            //descending order
 
         }
     };
@@ -162,8 +150,6 @@ public class StockInFav implements Comparable<StockInFav> {
             if (price1 > price2) return 1;
             return 0;
 
-            //descending order
-
         }
     };
 
@@ -173,12 +159,10 @@ public class StockInFav implements Comparable<StockInFav> {
             double price1 = o1.getChangePercent();
             double price2 = o2.getChangePercent();
 
-            //ascending order
+            //descending order
             if (price1 < price2) return 1;
             if (price1 > price2) return -1;
             return 0;
-
-            //descending order
 
         }
     };
