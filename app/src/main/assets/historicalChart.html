@@ -26,9 +26,11 @@ function showHistoricalChart(quote){
 					try{
 						if (data[0][0] == 0) {
 
-							//error
+							window.AndroidWebView.webViewLoadError();
 
 						} else {
+
+							window.AndroidWebView.showInfoFromJs();
 
 							Highcharts.stockChart('historicalChartsCon', {
 
@@ -124,8 +126,7 @@ function showHistoricalChart(quote){
                                                     count: 1,
                                                     text: 'All'
                                                 }],
-                                                selected: 0,
-                                                inputEnabled: false
+                                                selected: 0
                                             }
                                         }
                                     }]
@@ -133,13 +134,13 @@ function showHistoricalChart(quote){
 							});
 						}
 					}catch(e){
-
+						window.AndroidWebView.webViewLoadError();
 					}	
 
 				},
 				error : function(request,error)
 				{
-
+					window.AndroidWebView.webViewLoadError();
 				}
 
 			});

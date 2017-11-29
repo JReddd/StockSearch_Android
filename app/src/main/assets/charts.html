@@ -19,6 +19,8 @@
 
 		function showPrice(quote){
 
+
+
 			//Price
 			$.ajax({
 
@@ -30,8 +32,8 @@
 				dataType:'json',
 				success : function(data) {
 
-					try {
 
+					try {
 						symbolPrice = data['Stock Ticker Symbol'];
 						dataX = data['timeSeries'];
 						if (dataX) {
@@ -153,7 +155,8 @@
 				        		},
 				        		error: function (err) {
 				        			debugger;
-				        			console.log('error', err.statusText)
+				        			console.log('error', err.statusText);
+				        			window.AndroidWebView.webViewLoadError();
 				        		}
 				        	});
 				        }
@@ -161,13 +164,14 @@
 
 
 				}catch(e){
-
+					window.AndroidWebView.webViewLoadError();
 				}
 
 			},
 			error : function(request,error)
-			{
-
+			{	
+				console.log("error");
+				window.AndroidWebView.webViewLoadError();
 			}
 		});
 			
@@ -279,19 +283,20 @@
 						        		},
 						        		error: function (err) {
 						        			debugger;
-						        			console.log('error', err.statusText)
+						        			console.log('error', err.statusText);
+						        			window.AndroidWebView.webViewLoadError();
 						        		}
 						        	});
 						        }
 
 						}catch(e){
-
+							window.AndroidWebView.webViewLoadError();
 						}
 
 					},
 					error : function(request,error)
 					{
-
+						window.AndroidWebView.webViewLoadError();
 					}
 				});	
 
@@ -404,19 +409,20 @@
 						        		},
 						        		error: function (err) {
 						        			debugger;
-						        			console.log('error', err.statusText)
+						        			console.log('error', err.statusText);
+						        			window.AndroidWebView.webViewLoadError();
 						        		}
 						        	});
 						        }
 
 						}catch(e){
-
+							window.AndroidWebView.webViewLoadError();
 						}	
 
 					},
 					error : function(request,error)
 					{
-
+						window.AndroidWebView.webViewLoadError();
 					}
 				});
 
@@ -532,19 +538,20 @@
 						        		},
 						        		error: function (err) {
 						        			debugger;
-						        			console.log('error', err.statusText)
+						        			console.log('error', err.statusText);
+						        			window.AndroidWebView.webViewLoadError();
 						        		}
 						        	});
 						        }
 
 						}catch(e){
-
+							window.AndroidWebView.webViewLoadError();
 						}
 
 					},
 					error : function(request,error)
 					{
-
+						window.AndroidWebView.webViewLoadError();
 					}
 				});
 
@@ -654,19 +661,20 @@
 						        		},
 						        		error: function (err) {
 						        			debugger;
-						        			console.log('error', err.statusText)
+						        			console.log('error', err.statusText);
+						        			window.AndroidWebView.webViewLoadError();
 						        		}
 						        	});
 						        }	
 
 						}catch(e){
-
+							window.AndroidWebView.webViewLoadError();
 						}	
 
 					},
 					error : function(request,error)
 					{
-
+						window.AndroidWebView.webViewLoadError();
 					}
 				});
 
@@ -776,19 +784,20 @@
 						        		},
 						        		error: function (err) {
 						        			debugger;
-						        			console.log('error', err.statusText)
+						        			console.log('error', err.statusText);
+						        			window.AndroidWebView.webViewLoadError();
 						        		}
 						        	});
 						        }
 
 						}catch(e){
-
+							window.AndroidWebView.webViewLoadError();
 						}				
 
 					},
 					error : function(request,error)
 					{
-
+						window.AndroidWebView.webViewLoadError();
 					}
 				});
 
@@ -898,19 +907,20 @@
 						        		},
 						        		error: function (err) {
 						        			debugger;
-						        			console.log('error', err.statusText)
+						        			console.log('error', err.statusText);
+						        			window.AndroidWebView.webViewLoadError();
 						        		}
 						        	});
 						        }
 
 						}catch(e){
-
+							window.AndroidWebView.webViewLoadError();
 						}			
 
 					},
 					error : function(request,error)
 					{
-
+						window.AndroidWebView.webViewLoadError();
 					}
 				});
 
@@ -1032,19 +1042,20 @@
 						        		},
 						        		error: function (err) {
 						        			debugger;
-						        			console.log('error', err.statusText)
+						        			console.log('error', err.statusText);
+						        			window.AndroidWebView.webViewLoadError();
 						        		}
 						        	});
 						        }
 
 					}catch(e){
-
+						window.AndroidWebView.webViewLoadError();
 					}
 
 				},
 				error : function(request,error)
 				{
-
+					window.AndroidWebView.webViewLoadError();
 				}
 			});
 
@@ -1166,13 +1177,14 @@
 						        		},
 						        		error: function (err) {
 						        			debugger;
-						        			console.log('error', err.statusText)
+						        			console.log('error', err.statusText);
+						        			window.AndroidWebView.webViewLoadError();
 						        		}
 						        	});
 						        }
 
 					}catch(e){
-
+						window.AndroidWebView.webViewLoadError();
 					}
 
 					
@@ -1180,7 +1192,7 @@
 				},
 				error : function(request,error)
 				{
-
+					window.AndroidWebView.webViewLoadError();
 				}
 			});
 

@@ -152,7 +152,7 @@ public class NewsFragment extends Fragment {
                     });
 
             jsObjRequest.setRetryPolicy(new DefaultRetryPolicy(
-                    4000,
+                    3000,
                     DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
                     DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
 

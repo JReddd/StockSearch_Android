@@ -8,14 +8,19 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.support.v4.app.Fragment;
+import android.webkit.JavascriptInterface;
 import android.webkit.ValueCallback;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 public class HistoricalFragment extends Fragment {
 
     private View rootView;
+    private ProgressBar webViewProgressBar;
+    private TextView chartFailedTextView;
 
     public HistoricalFragment() {
         // Required empty public constructor
@@ -35,6 +40,9 @@ public class HistoricalFragment extends Fragment {
 
             rootView = inflater.inflate(R.layout.fragment_historical, container, false);
 
+            webViewProgressBar = rootView.findViewById(R.id.historicalProgressBar);
+            chartFailedTextView = rootView.findViewById(R.id.historicalDataFiledTextView);
+
             String symbol = getActivity().getIntent().getStringExtra("symbol");
             final String realSymbol;
 
@@ -52,6 +60,8 @@ public class HistoricalFragment extends Fragment {
             webSettings.setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
 
             webview.loadUrl("file:///android_asset/historicalChart.html");
+            webview.addJavascriptInterface(new JsInterface(getActivity()), "AndroidWebView");
+            webview.clearCache(true);
             webview.setWebViewClient(new WebViewClient() {
 
                 @Override
@@ -77,6 +87,41 @@ public class HistoricalFragment extends Fragment {
 
         // Inflate the layout for this fragment
         return rootView;
+    }
+
+    public class JsInterface {
+
+        private Context mContext;
+
+        public JsInterface(Context context) {
+            this.mContext = context;
+        }
+
+        @JavascriptInterface
+        public void showInfoFromJs() {
+
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    webViewProgressBar.setVisibility(View.GONE);
+                }
+            });
+
+        }
+
+        @JavascriptInterface
+        public void webViewLoadError(){
+
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    webViewProgressBar.setVisibility(View.GONE);
+                    chartFailedTextView.setVisibility(View.VISIBLE);
+                }
+            });
+
+        }
+
     }
 
 }

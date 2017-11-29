@@ -79,7 +79,7 @@
                 android:indeterminateTint="@android:color/black" />
 
             <TextView
-                android:id="@+id/dataFiledTextView"
+                android:id="@+id/dataFailedTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
@@ -138,7 +138,17 @@
                 android:layout_centerHorizontal="true"
                 android:layout_centerVertical="false"
                 android:layout_marginTop="600dp"
-                android:indeterminateTint="@android:color/black"
+                android:indeterminateTint="@android:color/black" />
+
+            <TextView
+                android:id="@+id/indicatorFailedTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="600dp"
+                android:textColor="@android:color/black"
+                android:text="Failed to load data."
+                android:textSize="22sp"
                 android:visibility="gone"/>
 
         </RelativeLayout>

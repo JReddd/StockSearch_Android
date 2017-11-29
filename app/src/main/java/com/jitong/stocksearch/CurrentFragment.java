@@ -56,6 +56,10 @@ public class CurrentFragment extends Fragment {
     private boolean inFavList = false;
     private String sharedPreJson;
     private String urlPic;
+    private ProgressBar webViewProgressBar;
+    private WebView webview;
+    private TextView indicatorsFailedTextView;
+    private ImageView fbImageView;
 
     public CurrentFragment() {
         // Required empty public constructor
@@ -97,12 +101,13 @@ public class CurrentFragment extends Fragment {
             final Integer downId = R.drawable.down;
 
             final ProgressBar progressBar = rootView.findViewById(R.id.stockDetailsProgressBar);
+            webViewProgressBar = rootView.findViewById(R.id.indicatorsProgressBar);
             final Button button = rootView.findViewById(R.id.indicatorButton);
-            final TextView dataFiledTextView = rootView.findViewById(R.id.dataFiledTextView);
-
+            final TextView dataFiledTextView = rootView.findViewById(R.id.dataFailedTextView);
+            indicatorsFailedTextView = rootView.findViewById(R.id.indicatorFailedTextView);
             final ImageView emptyStarImageView = rootView.findViewById(R.id.emptyStarImageView);
             final ImageView filledStarImageView = rootView.findViewById(R.id.filledStarImageView);
-            final ImageView fbImageView = rootView.findViewById(R.id.fbImageView);
+            fbImageView = rootView.findViewById(R.id.fbImageView);
 
             emptyStarImageView.setEnabled(false);
             filledStarImageView.setEnabled(false);
@@ -183,7 +188,7 @@ public class CurrentFragment extends Fragment {
                     });
 
             jsObjRequest.setRetryPolicy(new DefaultRetryPolicy(
-                    5000,
+                    3000,
                     DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
                     DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
 
@@ -265,7 +270,7 @@ public class CurrentFragment extends Fragment {
             });
 
             //webView
-            final WebView webview = rootView.findViewById(R.id.indicatorWebView);
+            webview = rootView.findViewById(R.id.indicatorWebView);
             WebSettings webSettings = webview.getSettings();
             webSettings.setJavaScriptEnabled(true);
             webSettings.setDomStorageEnabled(true);
@@ -275,6 +280,7 @@ public class CurrentFragment extends Fragment {
             webSettings.setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
 
             webview.loadUrl("file:///android_asset/charts.html");
+            webview.clearCache(true);
             webview.setWebViewClient(new WebViewClient() {
 
                 @Override
@@ -286,7 +292,7 @@ public class CurrentFragment extends Fragment {
                 public void onPageFinished(WebView view, String url) {
                     super.onPageFinished(view, url);
 
-                    //fbImageView.setEnabled(true);
+                    //
 
                     webview.evaluateJavascript("javascript:showPrice('" + realSymbol + "')", new ValueCallback<String>() {
                         @Override
@@ -318,6 +324,11 @@ public class CurrentFragment extends Fragment {
             //button change indicator
             button.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
+
+                    webview.setVisibility(View.GONE);
+                    webViewProgressBar.setVisibility(View.VISIBLE);
+                    indicatorsFailedTextView.setVisibility(View.GONE);
+
                     webview.evaluateJavascript("javascript:show" + selectedChartInSpinner + "('"+realSymbol+"')", new ValueCallback<String>() {
                         @Override
                         public void onReceiveValue(String value) {
@@ -353,6 +364,29 @@ public class CurrentFragment extends Fragment {
         public void showInfoFromJs(String urlPicInJs) {
 
             urlPic = urlPicInJs;
+
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    webViewProgressBar.setVisibility(View.GONE);
+                    webview.setVisibility(View.VISIBLE);
+                    fbImageView.setEnabled(true);
+                }
+            });
+
+        }
+
+        @JavascriptInterface
+        public void webViewLoadError(){
+
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    webview.setVisibility(View.GONE);
+                    webViewProgressBar.setVisibility(View.GONE);
+                    indicatorsFailedTextView.setVisibility(View.VISIBLE);
+                }
+            });
 
         }
 
