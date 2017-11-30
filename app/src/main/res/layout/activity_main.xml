@@ -74,7 +74,7 @@
         android:layout_alignStart="@+id/StockEditText"
         android:layout_below="@+id/GetQuoteButton"
         android:layout_marginStart="20dp"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="13dp"
         android:text="@string/favorites"
         android:textColor="@android:color/white"
         android:textSize="22sp"/>
@@ -85,11 +85,23 @@
         android:layout_height="wrap_content"
         android:layout_alignStart="@+id/StockEditText"
         android:layout_below="@+id/GetQuoteButton"
-        android:layout_marginStart="180dp"
+        android:layout_marginStart="170dp"
         android:layout_marginTop="15dp"
         android:layout_toEndOf="@+id/FavoritesTextView"
+        android:text="@string/autorefresh"
         android:textColor="@android:color/white"
-        android:text="@string/autorefresh" />
+        android:textSize="18sp"
+        android:theme="@style/SwitchTheme"/>
+
+    <ImageButton
+        android:id="@+id/refreshImageButton"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:layout_below="@+id/GetQuoteButton"
+        android:layout_marginStart="327dp"
+        android:layout_marginTop="10dp"
+        android:background="@android:color/transparent"
+        app:srcCompat="@drawable/ic_menu_refresh" />
 
     <Spinner
         android:id="@+id/SortBySpinner"
@@ -125,5 +137,15 @@
         android:layout_alignTop="@+id/orderSpinner"
         android:layout_marginTop="50dp"
         android:background="@android:color/white" />
+
+    <ProgressBar
+        android:id="@+id/refreshProgressBar"
+        android:indeterminateTint="@android:color/black"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/orderSpinner"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="100dp"
+        android:visibility="gone"/>
 
 </android.widget.RelativeLayout>

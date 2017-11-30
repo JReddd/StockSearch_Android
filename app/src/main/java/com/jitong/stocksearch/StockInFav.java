@@ -14,6 +14,18 @@ public class StockInFav implements Comparable<StockInFav> {
     private double changePercent;
     private long addedTime;
 
+    public void setPrice(double price) {
+        this.price = price;
+    }
+
+    public void setChange(double change) {
+        this.change = change;
+    }
+
+    public void setChangePercent(double changePercent) {
+        this.changePercent = changePercent;
+    }
+
     public StockInFav(String symbol, double price, double change, double changePercent, long addedTime) {
         super();
         this.symbol = symbol;

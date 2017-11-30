@@ -1,5 +1,6 @@
 package com.jitong.stocksearch;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -16,11 +17,21 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.PopupMenu;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.android.volley.DefaultRetryPolicy;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -37,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
     private String sortBy = "Sort By";
     private int positionInSortSpinner = 0;
     private int positionInOrderSpinner = 0;
+    private String sharedPreJson;
 
     public void getQuote(View view) {
 
@@ -82,7 +94,8 @@ public class MainActivity extends AppCompatActivity {
         stockSymbolTextView.setLoadingIndicator(
                 (android.widget.ProgressBar) findViewById(R.id.AutoCompleteProgressBar));
 
-        SharedPreferences sharedPref = this.getSharedPreferences("favList",Context.MODE_PRIVATE);
+        final SharedPreferences sharedPref = this.getSharedPreferences("favList",Context.MODE_PRIVATE);
+        final SharedPreferences.Editor editor = sharedPref.edit();
         final ListView favoriteListView = findViewById(R.id.favoriteListView);
 
         //favorite list
@@ -126,6 +139,124 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+
+        //refresh
+        final ImageButton refresh = this.findViewById(R.id.refreshImageButton);
+        refresh.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                final ProgressBar refreshProgressBar = findViewById(R.id.refreshProgressBar);
+                refreshProgressBar.setVisibility(View.VISIBLE);
+
+                final int[] i = {0};
+
+                for (final StockInFav entry : StockInFavArrayList) {
+
+                    refreshProgressBar.setVisibility(View.VISIBLE);
+
+                    //volley
+                    RequestQueue queue = Volley.newRequestQueue(MainActivity.this);
+
+                    final String symbol = entry.getSymbol();
+                    //Log.i("symbol",symbol);
+
+                    String url = "http://stocksearch-env.us-west-1.elasticbeanstalk.com/?stock_symbolTable=" + symbol;
+                    JsonObjectRequest jsObjRequest = new JsonObjectRequest
+                            (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+
+                                @Override
+                                public void onResponse(JSONObject response) {
+                                    try {
+
+                                        Log.i("refresh",symbol);
+
+                                        i[0]++;
+                                        if (i[0] == StockInFavArrayList.size()){
+
+                                            refreshProgressBar.setVisibility(View.GONE);
+
+                                        }
+
+                                        double price = Double.parseDouble(response.getString("Last Price"));
+                                        double change = Double.parseDouble(response.getString("Change"));
+                                        double changePercentTable = Double.parseDouble(response.getString("Change Percent").replace("%",""));
+                                        entry.setPrice(price);
+                                        entry.setChange(change);
+                                        entry.setChangePercent(changePercentTable);
+
+                                        String sharedPrefString = sharedPref.getString(symbol,"");
+                                        JSONObject obj = new JSONObject(sharedPrefString);
+                                        long addedTime = Long.parseLong(obj.getString("addedTime"));
+
+                                        String sharedPreJsonRefresh = "{'symbol':'" + symbol + "','price':'" + price + "','change':'" + change +
+                                                "','changePercent':'" + changePercentTable + "','addedTime':'" + addedTime + "'}";
+
+                                        editor.putString(symbol, sharedPreJsonRefresh).apply();
+
+                                        FavoriteAdapter arrayAdapterRefresh = new FavoriteAdapter(MainActivity.this, StockInFavArrayList);
+                                        favoriteListView.setAdapter(arrayAdapterRefresh);
+
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+
+                            }, new Response.ErrorListener() {
+
+                                @Override
+                                public void onErrorResponse(VolleyError error) {
+
+                                    Toast.makeText(MainActivity.this , "Failed to load one or more stocks", Toast.LENGTH_LONG).show();
+
+                                    Log.i("refresh error", String.valueOf(error));
+
+                                    i[0]++;
+                                    if (i[0] == StockInFavArrayList.size()){
+
+                                        refreshProgressBar.setVisibility(View.GONE);
+
+                                    }
+
+                                    try {
+                                        String sharedPrefString = sharedPref.getString(symbol,"");
+
+                                        JSONObject obj = new JSONObject(sharedPrefString);
+                                        long addedTime = Long.parseLong(obj.getString("addedTime"));
+
+                                        entry.setPrice(0.00);
+                                        entry.setChange(0.00);
+                                        entry.setChangePercent(0.00);
+
+                                        String sharedPreJsonRefresh = "{'symbol':'" + symbol + "','price':'" + "0.00" + "','change':'" + "0.00" +
+                                                "','changePercent':'" + "0.00" + "','addedTime':'" + addedTime + "'}";
+
+                                        editor.putString(symbol, sharedPreJsonRefresh).apply();
+
+                                        FavoriteAdapter arrayAdapterRefresh = new FavoriteAdapter(MainActivity.this, StockInFavArrayList);
+                                        favoriteListView.setAdapter(arrayAdapterRefresh);
+
+                                        Log.i("error", String.valueOf(error));
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+
+                                }
+                            });
+
+                    jsObjRequest.setRetryPolicy(new DefaultRetryPolicy(
+                            7000,
+                            DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                            DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+
+                    queue.add(jsObjRequest);
+                }
+
+            }
+        });
+
+        //auto refresh
+
 
         //spinner sort by
         Spinner spinner = this.findViewById(R.id.SortBySpinner);
