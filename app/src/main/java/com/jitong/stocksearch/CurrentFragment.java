@@ -220,6 +220,7 @@ public class CurrentFragment extends Fragment {
                     filledStarImageView.setVisibility(View.VISIBLE);
 
                     editor.putString(realSymbol, sharedPreJson).apply();
+                    Log.i(realSymbol,sharedPref.toString());
                 }
             });
 
