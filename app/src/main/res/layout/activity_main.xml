@@ -36,7 +36,8 @@
         android:textAlignment="center"
         android:textColor="@android:color/white"
         android:textColorLink="@android:color/white"
-        android:theme="@style/Autocomplete"/>
+        android:theme="@style/Autocomplete"
+        android:inputType="textNoSuggestions"/>
 
     <Button
         android:id="@+id/GetQuoteButton"

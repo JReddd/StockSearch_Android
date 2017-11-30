@@ -309,7 +309,7 @@ public class MainActivity extends AppCompatActivity {
         spinnerList.add("Price");
         spinnerList.add("Change");
         spinnerList.add("Change Percent");
-        ArrayAdapter spinnerAdapter = new ArrayAdapter(this,android.R.layout.simple_list_item_1,spinnerList){
+        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1,spinnerList){
 
             @Override
             public boolean isEnabled(int position){
@@ -428,7 +428,7 @@ public class MainActivity extends AppCompatActivity {
         orderSpinnerList.add("Order");
         orderSpinnerList.add("Ascending");
         orderSpinnerList.add("Descending");
-        ArrayAdapter orderSpinnerAdapter = new ArrayAdapter(this,android.R.layout.simple_list_item_1,orderSpinnerList){
+        ArrayAdapter<String> orderSpinnerAdapter = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1,orderSpinnerList){
 
             @Override
             public boolean isEnabled(int position){
