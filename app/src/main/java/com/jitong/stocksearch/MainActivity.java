@@ -260,6 +260,14 @@ public class MainActivity extends AppCompatActivity {
         FavoriteAdapter arrayAdapter = new FavoriteAdapter(this, StockInFavArrayList);
         favoriteListView.setAdapter(arrayAdapter);
 
+//        Log.i("sharedPref", String.valueOf(sharedPref.getAll().size()));
+//
+//        if (sharedPref.getAll().size() != 0){
+//            refreshFavList();
+//
+//        }
+
+
         favoriteListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
             @Override
