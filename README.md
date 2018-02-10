@@ -4,7 +4,7 @@
 
 ### Architecture
 ![images](https://github.com/Jitong-Liu/StockSearch_Android/blob/master/images/architecture.png)
-
+------
 
 ### Search Form
 ![images](https://github.com/Jitong-Liu/StockSearch_Android/blob/master/images/searchForm.png)
